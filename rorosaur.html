@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rorosaur PDP – High Conversion</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root{
+  /* FINAL ROROSAUR PALETTE (AS REQUESTED) */
+  --primary:#ed2d5e; /* main brand text color */
+  --bg:#fff8ed; /* main background */
+  --dark:#2B2D42;
+  --text:#ed2d5e;
+  --muted:#6B7280;
+  --border:#E5E7EB;
+}
+*{box-sizing:border-box}
+img{max-width:100%;display:block}
+body{margin:0;font-family:Inter;color:var(--text);background:var(--bg)}
+h1,h2{font-family:'Playfair Display'}
+p{color:var(--muted)}
+.container{width:90%;max-width:1200px;margin: 0 auto}
+.btn{background:var(--dark);color:#fff;padding:16px;border-radius:6px;text-align:center;font-weight:600}
+
+/* Quantity + CTA */
+.qty-cta{display:flex;align-items:stretch;margin-top:15px;max-width:420px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
+.qty{display:flex;align-items:center;gap:14px;padding:0 14px;background:#F7F7F7}
+.qty button{all:unset;cursor:pointer;font-weight:600;font-size:16px;line-height:1}
+.qty span{min-width:16px;text-align:center;font-weight:600}
+.cta-btn{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--dark);
+  color:#fff;
+  font-weight:700;
+  font-size:18px;        /* bigger text */
+  padding:22px 0;        /* bigger height */
+  letter-spacing:.8px;
+  border-radius:0 10px 10px 0;
+}.cta-btn:hover{opacity:.95}
+.badge{font-size:12px;padding:6px 10px;background:var(--beige);border-radius:20px;margin-right:6px}
+
+.topbar{background:#000;color:#fff;text-align:center;padding:8px;font-size:13px}
+
+.hero{display:flex;padding:10px 0}
+.hero-left{flex:1;background:#fff;border-radius:12px;height:460px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.hero-slide{width:100%;height:100%;display:none}
+.hero-slide.active{display:block}
+.hero-slide img,.hero-slide video{width:100%;height:100%;object-fit:contain}
+.hero-nav{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
+.hero-dot{width:8px;height:8px;border-radius:50%;background:#ddd;cursor:pointer}
+.hero-dot.active{background:var(--primary)}
+.hero-right{flex:1}
+.rating{margin:2px 0}
+.price{font-size:30px;font-weight:700}
+.strike{text-decoration:line-through;color:#999;margin-left:8px}
+.variant{border:2px solid var(--border);padding:16px;border-radius:10px;margin:10px 0;display:flex;justify-content:space-between}
+.variant.active{border-color:#000}
+
+/* Accordion Container */
+.mini-ingredients{
+  
+  padding: 15px;
+  border: 2px solid var(--primary);
+  border-radius: 35px;
+}
+
+/* Header */
+.accordion-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:left;
+  
+  font-weight:600;
+  cursor:pointer;
+ 
+}
+
+/* Content */
+.accordion-content{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.4s ease;
+  background:#f9f9f9;
+}
+
+/* Inner layout */
+.mini-wrap{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  padding:20px;
+  text-align:center;
+}
+
+/* Items */
+.mini-item img{
+  width:60px;
+  height:60px;
+  object-fit:contain;
+  margin:auto;
+}
+
+.mini-item h4{
+  margin:8px 0 2px;
+  font-size:14px;
+  color:#000;
+}
+
+.mini-item p{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* Rotate icon */
+.rotate{
+  transform:rotate(180deg);
+  transition:0.3s;
+}
+
+.highlight{background:var(--primary);color:#fff;padding:50px;text-align:center}
+.why{display:flex;padding:20px 0}
+.why img{width:100%;height:320px;object-fit:fill;border-radius:12px}
+.stats{background:#fff;padding:70px;text-align:center}
+.stat-grid{display:flex;justify-content:space-around}
+.authority{background:var(--primary);color:#fff;padding:20px;text-align:center}
+.timeline{background:#fff;padding:20px;text-align:center}
+.ingredients{background:#fff;padding:70px;text-align:center}
+/* GRID */
+.ingredients-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:20px;
+}
+
+/* CARD */
+.ingredient-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  text-align:center;
+  padding-bottom:12px;
+  display:flex;
+  flex-direction:column;
+}
+
+/* IMAGE FULL COVER */
+.img-wrap{
+  
+  height:140px;
+  overflow:hidden;
+}
+
+.img-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover; /* 🔥 no whitespace */
+}
+
+/* TEXT */
+.ingredient-card h3{
+  font-size:14px;
+  margin:10px 10px 4px;
+}
+
+.ingredient-card p{
+  font-size:12px;
+  padding:0 10px;
+}
+
+/* BUTTON (MATCH THEME) */
+.card-btn{
+  margin:10px;
+  padding:12px;
+  background:var(--dark); /* theme match */
+  color:#fff;
+  border-radius:8px;
+  font-weight:600;
+  font-size:13px;
+  cursor:pointer;
+}
+
+/* OPTIONAL HOVER */
+.card-btn:hover{
+  opacity:0.9;
+}
+
+/* DESKTOP */
+@media(min-width:768px){
+  .ingredients-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+.cross-sell{background:var(--primary);color:#fff;padding:70px;text-align:center}
+.how{padding:70px 0}
+.ugc{background:color:'#ffffff';padding:50px}
+
+/* UGC Carousel */
+.ugc-carousel{display:flex;gap:16px;overflow-x:auto;padding-top:20px;scroll-snap-type:x mandatory}
+.ugc-carousel::-webkit-scrollbar{display:none}
+.ugc-item{flex:0 0 220px;height:380px;border-radius:16px;overflow:hidden;scroll-snap-align:start;background:#000}
+.ugc-item img, .ugc-item video{width:100%;height:100%;object-fit:cover}
+
+/* optional arrows (desktop) */
+.ugc-wrap{position:relative}
+.ugc-arrow{position:absolute;top:50%;transform:translateY(-50%);background:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.15)}
+.ugc-arrow.left{left:-10px}
+.ugc-arrow.right{right:-10px}
+
+.card{display:none} /* hide old grid cards */
+.reviews{background:#fff;padding:20px; justify-content: center;text-align: center;}
+.faq{padding:20px}
+.full-image-section1 img{width:100%;height:100%;object-fit:cover;border-radius:12px}  
+/* 🔥 Hide original CTA (not deleted) */
+.full-image-section2 img{width:100%;height:100%;object-fit:cover}  
+
+.full-image-section3{
+ 
+  position:relative;
+  overflow:hidden;
+}
+
+.full-image-section3 img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* BUTTON OVERLAY */
+.image-btn{
+  position:absolute;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--primary);
+  color:#fff;
+  padding:14px 28px;
+  border-radius:30px;
+  font-weight:600;
+  font-size:14px;
+  cursor:pointer;
+  box-shadow:0 6px 20px rgba(0,0,0,0.2);
+  transition:0.3s;
+}
+
+.image-btn:hover{
+  transform:translateX(-50%) scale(1.05);
+}
+
+/* desktop tweak */
+@media(min-width:768px){
+  .full-image-section2{
+    height:80vh;
+  }
+}
+.hero-right .qty-cta{
+  display:none;
+}
+/* FULL SCREEN IMAGE */
+.full-image-section{
+  width:100%;
+  /* height:50vh; full mobile screen */
+  overflow:hidden;
+}
+
+.full-image-section img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.how-carousel{
+  padding:20px 0;
+  text-align:center;
+}
+
+.how-slider{
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  gap:16px;
+  padding-top:20px;
+}
+
+.how-slider::-webkit-scrollbar{
+  display:none;
+}
+
+.how-slide{
+  flex:0 0 80%;
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  scroll-snap-align:center;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+.how-slide img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:12px;
+}
+
+.how-slide h4{
+  margin:12px 0 6px;
+  font-size:16px;
+}
+
+.how-slide p{
+  font-size:13px;
+}
+
+/* dots */
+.how-dots{
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  margin-top:15px;
+}
+
+.how-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ccc;
+}
+
+.how-dot.active{
+  background:var(--primary);
+}
+/* Optional: better spacing on desktop */
+@media(min-width:768px){
+  .full-image-section{
+    height:80vh;
+  }
+}
+/* REMOVE DEFAULT SECTION SPACING */
+.ingredients{
+  padding:0;
+}
+
+/* FULL EDGE GRID */
+.ingredients-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  padding:12px;
+}
+
+/* CARD */
+.ingredient-card{
+  background:#fff;
+  border-radius:14px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* IMAGE FULL COVER (NO SPACE) */
+.img-wrap{
+  width:100%;
+  height:140px;
+}
+
+.img-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* CONTENT */
+.card-content{
+  padding:12px;
+  text-align:center;
+}
+
+.card-content h3{
+  font-size:14px;
+  margin-bottom:4px;
+  color:var(--primary);
+}
+
+.card-content p{
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+/* BUTTON (MATCH YOUR THEME EXACTLY) */
+.card-btn{
+  background:#ed2d5e; /* same as your dark */
+  color:#fff;
+  padding:12px;
+  border-radius:10px;
+  font-weight:600;
+  font-size:13px;
+}
+/* HEADING */
+.ingredients-heading{
+  text-align:center;
+  font-size:20px;
+  margin:20px 0 10px;
+  padding:0 12px;
+}
+
+/* DESKTOP */
+@media(min-width:768px){
+  .ingredients-grid{
+    grid-template-columns:repeat(3,1fr);
+    max-width:900px;
+    margin:auto;
+  }
+}
+/* ===== STICKY BAR ===== */
+.sticky-cart{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#fff;
+  border-top:1px solid var(--border);
+  padding:10px 15px;
+  z-index:999;
+}
+.sticky-inner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  max-width:600px;
+  margin:auto;
+}
+.sticky-price{font-weight:700;font-size:18px;}
+.sticky-price span{font-size:12px;color:var(--muted);}
+.sticky-btn{
+  background:var(--primary);
+  color:#fff;
+  padding:14px 24px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* ===== DRAWER ===== */
+.drawer{
+  position:fixed;
+  bottom:-100%;
+  left:0;
+  width:100%;
+  height:60%;
+  background:#fff;
+  border-radius:20px 20px 0 0;
+  box-shadow:0 -10px 30px rgba(0,0,0,.2);
+  transition:.4s ease;
+  z-index:1000;
+}
+.drawer.active{bottom:0;}
+.drawer-content{padding:20px;max-width:600px;margin:auto;}
+.drawer-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+/* drawer sections */
+.drawer-section{
+  margin-bottom:20px;
+}
+
+.drawer-section h4{
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+/* bundle grid */
+.bundle-grid{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+}
+
+.bundle-grid::-webkit-scrollbar{
+  display:none;
+}
+
+/* bundle card */
+.bundle-card{
+  min-width:120px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px;
+  text-align:center;
+  cursor:pointer;
+}
+
+.bundle-card img{
+  width:100%;
+  height:80px;
+  object-fit:cover;
+  border-radius:8px;
+  margin-bottom:6px;
+}
+
+.bundle-card p{
+  font-size:12px;
+  margin-bottom:2px;
+}
+
+.bundle-card span{
+  font-size:12px;
+  font-weight:600;
+}
+
+/* active effect (optional) */
+.bundle-card:hover{
+  border-color:var(--primary);
+}
+@media(max-width:768px){
+.hero{flex-direction:column}
+.stat-grid{flex-direction:column;gap:20px}
+.why{flex-direction:column}
+.grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">Free Shipping + COD Available | Limited Stock</div>
+<!-- ADD THIS JUST AFTER TOPBAR (NEW TITLE ABOVE HERO) -->
+<section class="container" >
+  <h1>Muskmelon Mango Baby Puree</h1>
+  <div class="rating">★★★★★ 4.8 (1434+ parents)</div>
+</section>
+<!-- HERO -->
+<section class="hero container">
+<div class="hero-left">
+  <div class="hero-slide active">
+    <img src="MM1_3_Ingredients.webp">
+  </div>
+  <div class="hero-slide">
+    <video src="AQOfWVV4IteD2vW-oR9pBYPAG1ahkB_qZ0xfjs_vWYZMzYH6nhID8Stkd4r8maJMu0uHUGzj6HaoNrrw-Lt_tOxmskeOQClhPvHyJog.mp4" muted autoplay loop playsinline></video>
+  </div>
+
+  <div class="hero-nav">
+    <div class="hero-dot active" onclick="showSlide(0)"></div>
+    <div class="hero-dot" onclick="showSlide(1)"></div>
+  </div>
+</div>
+<p>Craft fully Created to taste wonderful and Balance the Sugars and the Vitamins.
+All products are made only with Traditional Natural Ingredients for your peace of mind.
+</p>
+  <!-- <div class="hero-slide">
+    <video src="YOUR_VIDEO_URL.mp4" muted autoplay loop playsinline></video>
+  </div>
+
+  <div class="hero-nav">
+    <div class="hero-dot active" onclick="showSlide(0)"></div>
+    <div class="hero-dot" onclick="showSlide(1)"></div>
+  </div> -->
+</div>
+<section class="mini-ingredients">
+  <div class="container">
+
+    <!-- Accordion Header -->
+    <div class="accordion-header" onclick="toggleIngredients()">
+      <span>Key Ingredients</span>
+      <i class="fa fa-chevron-down" id="accIcon"></i>
+    </div>
+
+    <!-- Accordion Content -->
+    <div class="accordion-content" id="ingredientsContent">
+
+      <div class="mini-wrap">
+
+        <div class="mini-item">
+          <img src="mango.jpg" alt="Mango">
+          <h4>Mango</h4>
+          <p>Rich in vit C</p>
+        </div>
+
+        <div class="mini-item">
+          <img src="muskmelon.jpg" alt="Muskmelon">
+          <h4>Muskmelon</h4>
+          <p>Rich in vit C</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+<div class="hero-right">
+
+  
+<!-- <div class="badge">No Added Sugar</div>
+<div class="badge">100% Natural</div> -->
+
+<!-- <h1>Finally, A Baby Food That’s Easy to Digest & Actually Loved by Kids</h1>
+<p>No more fuss, constipation or incomplete nutrition. Designed for growing babies.</p> -->
+
+
+<!-- <p class="price">₹749 <span class="strike">₹999</span></p> -->
+
+<!-- <div class="variant active" onclick="openDrawer()"><div>
+<strong>Starter Pack</strong><br>
+<small>Perfect for first-time parents</small>
+</div>
+<div>₹749</div>
+</div>
+
+<div class="variant" onclick="openDrawer()"><div>
+<strong>Value Combo</strong><br>
+<small>Save more + better results</small>
+</div>
+<div>₹1349</div>
+</div>
+
+<div class="qty-cta">
+  <div class="qty">
+    <button aria-label="decrease">−</button>
+    <span>1</span>
+    <button aria-label="increase">+</button>
+  </div>
+  <div class="cta-btn">BUY IT NOW</div>
+</div> -->
+
+  
+
+<!-- </div>
+
+<p style="margin-top:10px;font-size:10px">✔ Loved by 1000+ parents &nbsp; ✔ Safe for daily use &nbsp; ✔ No preservatives</p>
+</div> -->
+</section>
+<section class="authority">
+  <h2>How It's Made</h2>
+  <p style="color: #fff8ed;">See how we you can prepare clean, nutritious food for your baby</p>
+  <div style="max-width:700px;margin:30px auto 0">
+    <video src="AQMVNKtcgeJbC-5TKypeQHMUPjFJr4n7mGaEvbj0Icl366H0tcxwshcGQ0gYBZ6P4fuJioxGIoYlzf4XpAA3IhgtYX-efiJ-46zGVqE.mp4" controls style="width:100%;border-radius:12px"></video>
+  </div>
+</section>
+<section class="full-image-section">
+  <img src="image copy.png" alt="Baby enjoying food">
+</section>
+<!-- STORY -->
+ <section class="highlight">
+<h2>Understanding the Digestion of Infants</h2>
+<p style="color: #fff8ed;">Infant Guts and Digestive Systems continue to develop until 24 to 30 months and they need special care. 
+The complex carbohydrates are Broken and Phytate Anti Nutrients founds in grains are neutralised to make Nutrients more readily available.
+</p>
+</section>
+<!-- <section class="highlight"> -->
+<!-- <h2>Why Most Baby Foods Fail — And How Rorosaur Fixes It</h2>
+<p style="color: #fff8ed;">Traditional baby foods are hard to digest, low in nutrition, and full of fillers.
+Rorosaur is designed to be gentle, nutritious, and parent-approved.</p>
+</section> -->
+
+<!-- WHY -->
+<section class="why container">
+<div>
+<img src="3_33afb82a-90be-4e7a-9160-7cbbbfd14351.webp">
+</div>
+<div>
+<h2>What Makes Rorosaur Different?</h2>
+<!-- <ul>
+<li><i class="fa fa-check"></i> Gentle on tiny stomachs</li>
+<li><i class="fa fa-check"></i> Helps reduce constipation & fussiness</li>
+<li><i class="fa fa-check"></i> Balanced nutrition for growth</li>
+<li><i class="fa fa-check"></i> No junk, fillers or added sugar</li>
+</ul> -->
+<p>While our inspiration is traditional, Our use of science and technology is futuristic. Instead of Preservatives (Natural or Artificial) to give you Fresh food whenever you need
+[Shelf Life of 12 Months]</p>
+
+</div>
+</section>
+<section class="full-image-section1">
+  <img src="Nutrition_Callout_Banner_5.webp" alt="Baby enjoying food">
+</section>
+</section>
+<section class="full-image-section2">
+  <img src="MM1_7_Comparison.webp" alt="Baby enjoying food">
+</section>
+<!-- STATS -->
+<!-- <section class="stats">
+<h2>Real Parent Results</h2>
+<div class="stat-grid">
+<div><h3>70%</h3><p>Improved digestion</p></div>
+<div><h3>75%</h3><p>Better appetite</p></div>
+<div><h3>90%</h3><p>Happier babies</p></div>
+</div>
+</section> -->
+
+<!-- VIDEO SECTION (How it's made) -->
+
+
+<!-- TIMELINE -->
+<!-- <section class="cross-sell">
+<h2>Boost Results with Probiotics</h2>
+<p style="color: #fff8ed;">Add gut-friendly probiotics for even better digestion & immunity</p>
+</section> -->
+
+<section class="how-carousel container">
+  <h2>How to Use</h2>
+
+  <div class="how-slider" id="howSlider">
+
+    <div class="how-slide">
+      <img src="622557626_18039004847749497_2538795441118036204_n.jpg" alt="Step 1">
+      <h4>Take 2 Scoops</h4>
+      <p>Add the recommended quantity to a bowl</p>
+    </div>
+
+    <div class="how-slide">
+      <img src="551813995_17920310781151905_8734288345743297369_n.jpg" alt="Step 2">
+      <h4>Mix with Water</h4>
+      <p>Add warm water and stir well</p>
+    </div>
+
+    <div class="how-slide">
+      <img src="548626642_18023654351749497_4676318607375065546_n.jpeg" alt="Step 3">
+      <h4>Feed Fresh</h4>
+      <p>Serve immediately for best nutrition</p>
+    </div>
+
+  </div>
+
+  <!-- dots -->
+  <div class="how-dots" id="howDots"></div>
+</section>
+<section class="highlight">
+  <h2>Why Most Baby Foods Fail — And How Rorosaur Fixes It</h2>
+<p style="color: #fff8ed;">Traditional baby foods are hard to digest, low in nutrition, and full of fillers.
+Rorosaur is designed to be gentle, nutritious, and parent-approved.</p>
+</section>
+<section class="full-image-section2">
+  <img src="MM1_5_Nutrition (1).webp" alt="Baby enjoying food">
+</section>
+
+<section class="timeline">
+<h2>What You’ll Notice</h2>
+
+<div class="tabs">
+  <!-- <div class="tab active" onclick="showTab(0)">Day 1</div>
+  <div class="tab" onclick="showTab(1)">Day 7</div>
+  <div class="tab" onclick="showTab(2)">Day 14</div> -->
+  <img src="Gemini_Generated_Image_38nvfc38nvfc38nv (2).png" style="width:100%;max-width:600px;margin:auto;display:block">
+</div>
+
+<div class="tab-content" id="tab-content">
+Less bloating and smoother feeding experience.
+</div>
+</section>
+
+
+<section class="full-image-section3">
+  <img src="image copy 4.png" alt="Baby enjoying food">
+
+  <div class="image-btn">
+Lab Test Report   </div>
+</section>
+<section class="ingredients">
+<h2 class="ingredients-heading">Complete Your Baby’s Nutrition</h2>
+
+  <div class="ingredients-grid">
+    <div class="ingredient-card">
+      <div class="img-wrap">
+        <img src="MM1_5_Nutrition.webp">
+      </div>
+      <div class="card-content">
+        <h3>Multigrain Mix</h3>
+        <p>Supports weight gain & balanced nutrition</p>
+        <div class="card-btn">Add to Cart</div>
+      </div>
+    </div>
+
+    <div class="ingredient-card">
+      <div class="img-wrap">
+        <img src="MM1_8_Differentiator.webp">
+      </div>
+      <div class="card-content">
+        <h3>Fruit Puree</h3>
+        <p>Rich in fiber for easy digestion</p>
+        <div class="card-btn">Add to Cart</div>
+      </div>
+    </div>
+
+    <div class="ingredient-card">
+      <div class="img-wrap">
+        <img src="MM1_3_Ingredients.webp">
+      </div>
+      <div class="card-content">
+        <h3>Daily Combo Pack</h3>
+        <p>Best value for complete daily nutrition</p>
+        <div class="card-btn">Add to Cart</div>
+      </div>
+    </div>
+
+    <div class="ingredient-card">
+      <div class="img-wrap">
+        <img src="MM1_3_Ingredients.webp">
+      </div>
+      <div class="card-content">
+        <h3>Daily Combo Pack</h3>
+        <p>Best value for complete daily nutrition</p>
+        <div class="card-btn">Add to Cart</div>
+      </div>
+    </div>
+    
+
+  </div>
+
+</section>
+
+<!-- CROSS SELL -->
+
+<!-- HOW -->
+<!-- <section class="how container">
+<h2>How to Use</h2>
+<p>Ready to eat. No prep needed. Just open & feed anytime during the day.</p>
+</section> -->
+
+<!-- UGC -->
+<section class="ugc">
+  <h2>Real Moms. Real Results.</h2>
+  <div class="ugc-wrap">
+
+    <div class="ugc-arrow left" onclick="scrollUGC(-1)"><i class="fa fa-chevron-left"></i></div>
+    <div class="ugc-arrow right" onclick="scrollUGC(1)"><i class="fa fa-chevron-right"></i></div>
+
+    <div class="ugc-carousel" id="ugcCarousel">
+
+      <div class="ugc-item">
+        <video src="AQMVNKtcgeJbC-5TKypeQHMUPjFJr4n7mGaEvbj0Icl366H0tcxwshcGQ0gYBZ6P4fuJioxGIoYlzf4XpAA3IhgtYX-efiJ-46zGVqE.mp4">
+      </div>
+
+      <div class="ugc-item">
+        <video src="AQMVNKtcgeJbC-5TKypeQHMUPjFJr4n7mGaEvbj0Icl366H0tcxwshcGQ0gYBZ6P4fuJioxGIoYlzf4XpAA3IhgtYX-efiJ-46zGVqE.mp4">
+      </div>
+
+      
+
+    </div>
+  </div>
+</section>
+<!-- REVIEWS -->
+<section class="reviews">
+<h2>What Parents Are Saying</h2>
+<p>"Finally something my baby enjoys AND digests easily. Total relief!"</p>
+</section>
+
+<!-- FAQ -->
+<section class="faq container">
+<h2>FAQs</h2>
+<details><summary>Is it safe for daily use?</summary><p>Yes, made with 100% natural ingredients.</p></details>
+<details><summary>What age is it suitable for?</summary><p>Suitable for babies above 6 months.</p></details>
+<details><summary>Is it safe for daily use?</summary><p>Yes, made with 100% natural ingredients.</p></details>
+<details><summary>What age is it suitable for?</summary><p>Suitable for babies above 6 months.</p></details>
+<details><summary>Is it safe for daily use?</summary><p>Yes, made with 100% natural ingredients.</p></details>
+<details><summary>What age is it suitable for?</summary><p>Suitable for babies above 6 months.</p></details>
+</section>
+
+<script>
+let currentSlide = 0;
+function showSlide(index){
+  const slides = document.querySelectorAll('.hero-slide');
+  const dots = document.querySelectorAll('.hero-dot');
+  slides.forEach(s=>s.classList.remove('active'));
+  dots.forEach(d=>d.classList.remove('active'));
+  slides[index].classList.add('active');
+  dots[index].classList.add('active');
+  currentSlide = index;
+}
+function openDrawer(){
+  document.getElementById('drawer').classList.add('active');
+}
+
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('active');
+}
+function toggleIngredients(){
+  const content = document.getElementById("ingredientsContent");
+  const icon = document.getElementById("accIcon");
+
+  if(content.style.maxHeight){
+    content.style.maxHeight = null;
+    icon.classList.remove("rotate");
+  } else {
+    content.style.maxHeight = content.scrollHeight + "px";
+    icon.classList.add("rotate");
+  }
+}
+const slider = document.getElementById("howSlider");
+const dotsContainer = document.getElementById("howDots");
+const slides = slider.children;
+
+// create dots
+for(let i=0;i<slides.length;i++){
+  const dot = document.createElement("div");
+  dot.classList.add("how-dot");
+  if(i===0) dot.classList.add("active");
+  dotsContainer.appendChild(dot);
+}
+
+const dots = dotsContainer.children;
+
+slider.addEventListener("scroll", ()=>{
+  const index = Math.round(slider.scrollLeft / slider.offsetWidth);
+  
+  for(let i=0;i<dots.length;i++){
+    dots[i].classList.remove("active");
+  }
+  
+  if(dots[index]) dots[index].classList.add("active");
+});
+</script>
+<!-- STICKY BAR -->
+<div class="sticky-cart">
+  <div class="sticky-inner">
+    <div class="sticky-price">
+      ₹749 <span>Starter Pack</span>
+    </div>
+    <div class="sticky-btn" onclick="openDrawer()">Add to Cart</div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="drawer-content">
+
+    <!-- HEADER -->
+    <div class="drawer-header">
+      <h3>Muskmelon Mango Baby Puree</h3>
+      <span onclick="closeDrawer()">✕</span>
+    </div>
+
+    <!-- SUGGESTED BUNDLES -->
+    <div class="drawer-section">
+      <h4>Recommended Bundles</h4>
+
+      <div class="bundle-grid">
+
+        <div class="bundle-card">
+          <img src="MM1_3_Ingredients.webp">
+          <p>Starter Pack</p>
+          <span>₹749</span>
+        </div>
+
+        <div class="bundle-card">
+          <img src="MM1_5_Nutrition.webp">
+          <p>Value Combo</p>
+          <span>₹1349</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VARIANTS -->
+    <div class="drawer-section">
+      <h4>Select Pack</h4>
+
+      <div class="variant active">Starter Pack - ₹749</div>
+      <div class="variant">Value Combo - ₹1349</div>
+    </div>
+
+    <!-- CTA -->
+    <div class="qty-cta">
+      <div class="qty">
+        <button>−</button>
+        <span>1</span>
+        <button>+</button>
+      </div>
+      <div class="cta-btn">Add to Cart</div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
