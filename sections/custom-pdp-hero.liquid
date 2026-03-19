@@ -1,35 +1,64 @@
-<div class="pdp-hero">
+{%- assign product = section.settings.product -%}
+
+{% if product != blank %}
+
+<div class="pdp-hero" data-section="{{ section.id }}">
   <div class="pdp-hero__container">
 
     <!-- TITLE (mobile only, above gallery) -->
     <div class="pdp-hero__title-mobile">
-      <h1 class="pdp-hero__name">{{ section.settings.product_title }}</h1>
-      <div class="pdp-hero__rating">★★★★★ {{ section.settings.rating }} ({{ section.settings.review_count }})</div>
+      <h1 class="pdp-hero__name">{{ product.title }}</h1>
+      <div class="pdp-hero__rating">
+        ★★★★★ {{ section.settings.rating }} ({{ section.settings.review_count }})
+      </div>
     </div>
 
-    <!-- IMAGE GALLERY -->
-    <div class="pdp-hero__gallery">
-      {% for block in section.blocks %}
-        {% if block.type == 'image' %}
-          <div class="pdp-hero__slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
-            <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ section.settings.product_title }}" loading="lazy">
-          </div>
-        {% elsif block.type == 'video' %}
-          <div class="pdp-hero__slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
-            <video src="{{ block.settings.video_url }}" muted autoplay loop playsinline></video>
-          </div>
-        {% endif %}
-      {% endfor %}
+    <!-- IMAGE GALLERY — pulled from product.media -->
+    <div class="pdp-hero__gallery" id="pdpGallery-{{ section.id }}">
+      {%- for media in product.media -%}
+        <div class="pdp-hero__slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
+          {%- if media.media_type == 'image' -%}
+            <img
+              src="{{ media | image_url: width: 900 }}"
+              srcset="{{ media | image_url: width: 400 }} 400w, {{ media | image_url: width: 700 }} 700w, {{ media | image_url: width: 900 }} 900w"
+              sizes="(min-width:750px) 50vw, 100vw"
+              alt="{{ media.alt | default: product.title }}"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              width="{{ media.width }}"
+              height="{{ media.height }}"
+            >
+          {%- elsif media.media_type == 'video' -%}
+            {{ media | video_tag: autoplay: true, loop: true, muted: true, playsinline: true }}
+          {%- elsif media.media_type == 'external_video' -%}
+            {{ media | external_video_tag }}
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
 
-      <div class="pdp-hero__dots">
-        {% assign media_count = 0 %}
-        {% for block in section.blocks %}
-          {% if block.type == 'image' or block.type == 'video' %}
-            <div class="pdp-hero__dot {% if media_count == 0 %}active{% endif %}" data-slide="{{ media_count }}"></div>
-            {% assign media_count = media_count | plus: 1 %}
-          {% endif %}
-        {% endfor %}
-      </div>
+      {% if product.media.size > 1 %}
+        <div class="pdp-hero__dots">
+          {%- for media in product.media -%}
+            <div class="pdp-hero__dot {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.index0 }}"></div>
+          {%- endfor -%}
+        </div>
+      {% endif %}
+
+      <!-- Thumbnail strip (desktop) -->
+      {% if product.media.size > 1 %}
+        <div class="pdp-hero__thumbs">
+          {%- for media in product.media -%}
+            {%- if media.media_type == 'image' -%}
+              <div class="pdp-hero__thumb {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.index0 }}">
+                <img src="{{ media | image_url: width: 120 }}" alt="{{ media.alt | default: product.title }}" loading="lazy">
+              </div>
+            {%- else -%}
+              <div class="pdp-hero__thumb {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.index0 }}">
+                <div class="pdp-hero__thumb-play">▶</div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {% endif %}
     </div>
 
     <!-- PRODUCT INFO -->
@@ -37,20 +66,60 @@
 
       <!-- TITLE (desktop only) -->
       <div class="pdp-hero__title-desktop">
-        <h1 class="pdp-hero__name">{{ section.settings.product_title }}</h1>
-        <div class="pdp-hero__rating">★★★★★ {{ section.settings.rating }} ({{ section.settings.review_count }})</div>
-        <p class="pdp-hero__price">
-          {{ section.settings.sale_price }}
-          {% if section.settings.compare_price != blank %}
-            <span class="pdp-hero__compare">{{ section.settings.compare_price }}</span>
-          {% endif %}
-        </p>
+        <h1 class="pdp-hero__name">{{ product.title }}</h1>
+        {% if product.metafields.reviews.rating.value != blank %}
+          <div class="pdp-hero__rating">
+            ★★★★★ {{ product.metafields.reviews.rating.value }} ({{ product.metafields.reviews.rating_count.value }} reviews)
+          </div>
+        {% elsif section.settings.rating != blank %}
+          <div class="pdp-hero__rating">
+            ★★★★★ {{ section.settings.rating }} ({{ section.settings.review_count }})
+          </div>
+        {% endif %}
       </div>
 
-      <p class="pdp-hero__desc">{{ section.settings.description }}</p>
+      <!-- PRICE — from product object -->
+      <div class="pdp-hero__price-wrap">
+        <span class="pdp-hero__price">{{ product.selected_or_first_available_variant.price | money }}</span>
+        {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+          <span class="pdp-hero__compare">{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
+          <span class="pdp-hero__badge-sale">
+            {{ product.selected_or_first_available_variant.compare_at_price | minus: product.selected_or_first_available_variant.price | times: 100.0 | divided_by: product.selected_or_first_available_variant.compare_at_price | round }}% OFF
+          </span>
+        {% endif %}
+      </div>
 
-      <!-- KEY INGREDIENTS ACCORDION -->
-      {% if section.settings.show_ingredients %}
+      <!-- DESCRIPTION — from product -->
+      <div class="pdp-hero__desc">{{ product.description }}</div>
+
+      <!-- VARIANT SELECTOR (if multiple variants) -->
+      {% if product.variants.size > 1 %}
+        <div class="pdp-hero__variants">
+          <h4 class="pdp-hero__variants-label">Select Pack</h4>
+          {%- for variant in product.variants -%}
+            <label class="pdp-hero__variant-option {% if variant == product.selected_or_first_available_variant %}pdp-hero__variant-option--active{% endif %}">
+              <input
+                type="radio"
+                name="variant-{{ section.id }}"
+                value="{{ variant.id }}"
+                data-price="{{ variant.price | money }}"
+                data-compare="{{ variant.compare_at_price | money }}"
+                {% if variant == product.selected_or_first_available_variant %}checked{% endif %}
+                {% unless variant.available %}disabled{% endunless %}
+              >
+              <span class="pdp-hero__variant-name">
+                {{ variant.title }}
+                {% unless variant.available %}<em>(Sold out)</em>{% endunless %}
+              </span>
+              <span class="pdp-hero__variant-price">{{ variant.price | money }}</span>
+            </label>
+          {%- endfor -%}
+        </div>
+      {% endif %}
+
+      <!-- KEY INGREDIENTS ACCORDION (from blocks — only extra content) -->
+      {% assign ingredient_blocks = section.blocks | where: 'type', 'ingredient' %}
+      {% if section.settings.show_ingredients and ingredient_blocks.size > 0 %}
         <div class="pdp-hero__ingredients">
           <div class="pdp-hero__acc-header" onclick="this.parentElement.classList.toggle('open')">
             <span>{{ section.settings.ingredients_title | default: 'Key Ingredients' }}</span>
@@ -58,37 +127,59 @@
           </div>
           <div class="pdp-hero__acc-content">
             <div class="pdp-hero__acc-wrap">
-              {% for block in section.blocks %}
-                {% if block.type == 'ingredient' %}
-                  <div class="pdp-hero__ingredient">
-                    {% if block.settings.icon != blank %}
-                      <img src="{{ block.settings.icon | image_url: width: 120 }}" alt="{{ block.settings.name }}">
-                    {% endif %}
-                    <h4>{{ block.settings.name }}</h4>
-                    <p>{{ block.settings.benefit }}</p>
-                  </div>
-                {% endif %}
+              {% for block in ingredient_blocks %}
+                <div class="pdp-hero__ingredient" {{ block.shopify_attributes }}>
+                  {% if block.settings.icon != blank %}
+                    <img src="{{ block.settings.icon | image_url: width: 120 }}" alt="{{ block.settings.name }}">
+                  {% endif %}
+                  <h4>{{ block.settings.name }}</h4>
+                  <p>{{ block.settings.benefit }}</p>
+                </div>
               {% endfor %}
             </div>
           </div>
         </div>
       {% endif %}
 
-      <!-- QTY + CTA (desktop) -->
-      <div class="pdp-hero__cta">
-        <div class="pdp-hero__qty">
-          <button class="pdp-hero__qty-btn" data-action="decrease" aria-label="decrease">−</button>
-          <span class="pdp-hero__qty-val">1</span>
-          <button class="pdp-hero__qty-btn" data-action="increase" aria-label="increase">+</button>
+      <!-- QTY + ADD TO CART (real Shopify form) -->
+      {%- form 'product', product, id: 'pdpForm', data-section: section.id -%}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" id="pdpVariantId-{{ section.id }}">
+
+        <div class="pdp-hero__cta">
+          <div class="pdp-hero__qty">
+            <button type="button" class="pdp-hero__qty-btn" data-action="decrease" aria-label="Decrease quantity">−</button>
+            <input type="number" name="quantity" value="1" min="1" class="pdp-hero__qty-val" aria-label="Quantity">
+            <button type="button" class="pdp-hero__qty-btn" data-action="increase" aria-label="Increase quantity">+</button>
+          </div>
+          <button
+            type="submit"
+            class="pdp-hero__buy-btn"
+            {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}
+          >
+            {% if product.selected_or_first_available_variant.available %}
+              {{ section.settings.cta_text | default: 'ADD TO CART' }}
+            {% else %}
+              SOLD OUT
+            {% endif %}
+          </button>
         </div>
-        <button class="pdp-hero__buy-btn">{{ section.settings.cta_text | default: 'BUY IT NOW' }}</button>
-      </div>
+      {%- endform -%}
 
-      <p class="pdp-hero__trust">✔ Loved by 1000+ parents &nbsp; ✔ Safe for daily use &nbsp; ✔ No preservatives</p>
+      <!-- TRUST BADGES -->
+      {% if section.settings.trust_text != blank %}
+        <p class="pdp-hero__trust">{{ section.settings.trust_text }}</p>
+      {% endif %}
+
     </div>
-
   </div>
 </div>
+
+{% else %}
+  <!-- No product selected — show placeholder in editor -->
+  <div class="pdp-hero" style="padding:60px 20px;text-align:center">
+    <p style="color:#6B7280">Select a product in section settings to display the PDP hero.</p>
+  </div>
+{% endif %}
 
 <style>
   .pdp-hero{
@@ -98,6 +189,7 @@
     max-width:1200px;
     margin:0 auto;
   }
+
   /* TITLE MOBILE */
   .pdp-hero__title-desktop{display:none}
   .pdp-hero__name{
@@ -111,18 +203,34 @@
     color:#ed2d5e;
     margin-bottom:8px;
   }
+
+  /* PRICE */
+  .pdp-hero__price-wrap{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    flex-wrap:wrap;
+    margin:10px 0;
+  }
   .pdp-hero__price{
-    font-size:28px;
+    font-size:26px;
     font-weight:700;
     color:#ed2d5e;
-    margin:8px 0 0;
   }
   .pdp-hero__compare{
     text-decoration:line-through;
     color:#999;
-    font-size:18px;
-    margin-left:8px;
+    font-size:16px;
   }
+  .pdp-hero__badge-sale{
+    background:#ed2d5e;
+    color:#fff;
+    font-size:11px;
+    font-weight:700;
+    padding:3px 8px;
+    border-radius:4px;
+  }
+
   /* GALLERY */
   .pdp-hero__gallery{
     position:relative;
@@ -138,7 +246,8 @@
   }
   .pdp-hero__slide.active{display:block}
   .pdp-hero__slide img,
-  .pdp-hero__slide video{
+  .pdp-hero__slide video,
+  .pdp-hero__slide iframe{
     width:100%;
     height:100%;
     object-fit:contain;
@@ -159,13 +268,51 @@
   }
   .pdp-hero__dot.active{background:#ed2d5e}
 
-  /* INFO */
+  /* Thumbnails — hidden on mobile */
+  .pdp-hero__thumbs{display:none}
+
+  /* DESCRIPTION */
   .pdp-hero__desc{
     font-size:14px;
     color:#6B7280;
     line-height:1.6;
     margin:10px 0;
   }
+  .pdp-hero__desc p{margin:0 0 8px}
+
+  /* VARIANT SELECTOR */
+  .pdp-hero__variants{margin:14px 0}
+  .pdp-hero__variants-label{
+    font-size:14px;
+    font-weight:600;
+    color:#2B2D42;
+    margin:0 0 8px;
+  }
+  .pdp-hero__variant-option{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border:2px solid #E5E7EB;
+    border-radius:10px;
+    padding:13px 16px;
+    margin-bottom:8px;
+    cursor:pointer;
+    font-size:14px;
+    color:#2B2D42;
+    transition:border-color .2s;
+  }
+  .pdp-hero__variant-option input{display:none}
+  .pdp-hero__variant-option--active,
+  .pdp-hero__variant-option:has(input:checked){
+    border-color:#2B2D42;
+  }
+  .pdp-hero__variant-option:has(input:disabled){
+    opacity:.5;
+    cursor:not-allowed;
+  }
+  .pdp-hero__variant-name{font-weight:500}
+  .pdp-hero__variant-name em{font-size:12px;color:#999}
+  .pdp-hero__variant-price{font-weight:700}
 
   /* INGREDIENTS ACCORDION */
   .pdp-hero__ingredients{
@@ -218,6 +365,7 @@
   .pdp-hero__ingredient p{
     font-size:11px;
     color:#6B7280;
+    margin:0;
   }
 
   /* CTA — hidden on mobile (sticky bar used instead) */
@@ -233,21 +381,57 @@
       align-items:flex-start;
     }
     .pdp-hero__title-mobile{display:none}
-    .pdp-hero__title-desktop{display:block;margin-bottom:10px}
+    .pdp-hero__title-desktop{display:block;margin-bottom:6px}
     .pdp-hero__name{font-size:32px;margin:0 0 4px}
+
+    /* Gallery */
     .pdp-hero__gallery{
       flex:0 0 50%;
       height:540px;
       border-radius:16px;
     }
+
+    /* Thumbnails — visible on desktop */
+    .pdp-hero__thumbs{
+      display:flex;
+      gap:8px;
+      margin-top:10px;
+      overflow-x:auto;
+    }
+    .pdp-hero__thumbs::-webkit-scrollbar{display:none}
+    .pdp-hero__thumb{
+      flex:0 0 72px;
+      height:72px;
+      border-radius:8px;
+      overflow:hidden;
+      border:2px solid transparent;
+      cursor:pointer;
+      position:relative;
+    }
+    .pdp-hero__thumb.active{border-color:#ed2d5e}
+    .pdp-hero__thumb img{
+      width:100%;height:100%;
+      object-fit:cover;
+    }
+    .pdp-hero__thumb-play{
+      width:100%;height:100%;
+      display:flex;align-items:center;justify-content:center;
+      background:#eee;
+      font-size:20px;
+      color:#666;
+    }
+
+    /* Info column */
     .pdp-hero__info{
       flex:1;
       padding-top:10px;
     }
     .pdp-hero__desc{font-size:15px}
+    .pdp-hero__price{font-size:30px}
+    .pdp-hero__compare{font-size:18px}
     .pdp-hero__ingredients{max-width:100%;margin-top:16px}
 
-    /* show CTA on desktop */
+    /* Show CTA on desktop */
     .pdp-hero__cta{
       display:flex;
       align-items:stretch;
@@ -269,13 +453,24 @@
       all:unset;
       cursor:pointer;
       font-weight:600;
-      font-size:16px;
+      font-size:18px;
+      width:28px;
+      height:28px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
     .pdp-hero__qty-val{
-      min-width:16px;
+      width:36px;
       text-align:center;
       font-weight:600;
+      font-size:16px;
+      border:none;
+      background:transparent;
+      -moz-appearance:textfield;
     }
+    .pdp-hero__qty-val::-webkit-inner-spin-button,
+    .pdp-hero__qty-val::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
     .pdp-hero__buy-btn{
       flex:1;
       background:#2B2D42;
@@ -287,8 +482,13 @@
       letter-spacing:.8px;
       cursor:pointer;
       border-radius:0 10px 10px 0;
+      transition:opacity .2s;
     }
     .pdp-hero__buy-btn:hover{opacity:.92}
+    .pdp-hero__buy-btn:disabled{
+      background:#ccc;
+      cursor:not-allowed;
+    }
     .pdp-hero__trust{
       display:block;
       font-size:12px;
@@ -300,27 +500,81 @@
 
 <script>
   (function(){
-    const section = document.querySelector('.pdp-hero__gallery');
-    if(!section) return;
-    const slides = section.querySelectorAll('.pdp-hero__slide');
-    const dots = section.querySelectorAll('.pdp-hero__dot');
-    dots.forEach(dot => {
-      dot.addEventListener('click', function(){
-        const idx = parseInt(this.dataset.slide);
-        slides.forEach(s => s.classList.remove('active'));
-        dots.forEach(d => d.classList.remove('active'));
-        slides[idx].classList.add('active');
-        this.classList.add('active');
-      });
-    });
-    // Qty buttons
-    document.querySelectorAll('.pdp-hero__qty-btn').forEach(btn => {
+    const sectionId = '{{ section.id }}';
+    const gallery = document.getElementById('pdpGallery-' + sectionId);
+    if(!gallery) return;
+
+    const slides = gallery.querySelectorAll('.pdp-hero__slide');
+    const dots = gallery.querySelectorAll('.pdp-hero__dot');
+    const thumbs = gallery.querySelectorAll('.pdp-hero__thumb');
+
+    function goToSlide(idx){
+      slides.forEach(s => s.classList.remove('active'));
+      dots.forEach(d => d.classList.remove('active'));
+      thumbs.forEach(t => t.classList.remove('active'));
+      if(slides[idx]) slides[idx].classList.add('active');
+      if(dots[idx]) dots[idx].classList.add('active');
+      if(thumbs[idx]) thumbs[idx].classList.add('active');
+    }
+
+    dots.forEach(dot => dot.addEventListener('click', function(){ goToSlide(+this.dataset.slide); }));
+    thumbs.forEach(thumb => thumb.addEventListener('click', function(){ goToSlide(+this.dataset.slide); }));
+
+    /* Touch swipe on mobile */
+    let startX = 0;
+    let currentIdx = 0;
+    gallery.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive:true});
+    gallery.addEventListener('touchend', e => {
+      const diff = startX - e.changedTouches[0].clientX;
+      if(Math.abs(diff) > 50){
+        if(diff > 0 && currentIdx < slides.length - 1) currentIdx++;
+        else if(diff < 0 && currentIdx > 0) currentIdx--;
+        goToSlide(currentIdx);
+      }
+    }, {passive:true});
+
+    /* Qty buttons */
+    const section = gallery.closest('.pdp-hero');
+    section.querySelectorAll('.pdp-hero__qty-btn').forEach(btn => {
       btn.addEventListener('click', function(){
-        const val = this.parentElement.querySelector('.pdp-hero__qty-val');
-        let n = parseInt(val.textContent);
+        const input = this.parentElement.querySelector('.pdp-hero__qty-val');
+        let n = parseInt(input.value) || 1;
         if(this.dataset.action === 'increase') n++;
         else if(n > 1) n--;
-        val.textContent = n;
+        input.value = n;
+      });
+    });
+
+    /* Variant selection → update hidden input + price display */
+    const variantInputs = section.querySelectorAll('input[name="variant-' + sectionId + '"]');
+    const hiddenId = document.getElementById('pdpVariantId-' + sectionId);
+    const priceEl = section.querySelector('.pdp-hero__price');
+    const compareEl = section.querySelector('.pdp-hero__compare');
+    const badgeEl = section.querySelector('.pdp-hero__badge-sale');
+    const buyBtn = section.querySelector('.pdp-hero__buy-btn');
+
+    variantInputs.forEach(input => {
+      input.addEventListener('change', function(){
+        if(hiddenId) hiddenId.value = this.value;
+
+        /* update active class */
+        section.querySelectorAll('.pdp-hero__variant-option').forEach(o => o.classList.remove('pdp-hero__variant-option--active'));
+        this.closest('.pdp-hero__variant-option').classList.add('pdp-hero__variant-option--active');
+
+        /* update displayed price */
+        if(priceEl && this.dataset.price) priceEl.textContent = this.dataset.price;
+        if(compareEl && this.dataset.compare) compareEl.textContent = this.dataset.compare;
+
+        /* update button state */
+        if(buyBtn){
+          if(this.disabled){
+            buyBtn.disabled = true;
+            buyBtn.textContent = 'SOLD OUT';
+          } else {
+            buyBtn.disabled = false;
+            buyBtn.textContent = '{{ section.settings.cta_text | default: "ADD TO CART" }}';
+          }
+        }
       });
     });
   })();
@@ -330,12 +584,16 @@
 {
   "name": "PDP Hero",
   "class": "section-pdp-hero",
+  "tag": "section",
   "settings": [
     {
-      "type": "text",
-      "id": "product_title",
-      "label": "Product Title",
-      "default": "Muskmelon Mango Baby Puree"
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "header",
+      "content": "Reviews (fallback if no metafield)"
     },
     {
       "type": "text",
@@ -346,26 +604,12 @@
     {
       "type": "text",
       "id": "review_count",
-      "label": "Review Count",
+      "label": "Review Count Text",
       "default": "1434+ parents"
     },
     {
-      "type": "text",
-      "id": "sale_price",
-      "label": "Sale Price",
-      "default": "₹749"
-    },
-    {
-      "type": "text",
-      "id": "compare_price",
-      "label": "Compare Price",
-      "default": "₹999"
-    },
-    {
-      "type": "textarea",
-      "id": "description",
-      "label": "Short Description",
-      "default": "Craft fully Created to taste wonderful and Balance the Sugars and the Vitamins. All products are made only with Traditional Natural Ingredients for your peace of mind."
+      "type": "header",
+      "content": "Key Ingredients"
     },
     {
       "type": "checkbox",
@@ -376,39 +620,27 @@
     {
       "type": "text",
       "id": "ingredients_title",
-      "label": "Ingredients Accordion Title",
+      "label": "Accordion Title",
       "default": "Key Ingredients"
+    },
+    {
+      "type": "header",
+      "content": "Cart Button"
     },
     {
       "type": "text",
       "id": "cta_text",
       "label": "CTA Button Text",
-      "default": "BUY IT NOW"
+      "default": "ADD TO CART"
+    },
+    {
+      "type": "text",
+      "id": "trust_text",
+      "label": "Trust Badges Text",
+      "default": "✔ Loved by 1000+ parents  ✔ Safe for daily use  ✔ No preservatives"
     }
   ],
   "blocks": [
-    {
-      "type": "image",
-      "name": "Product Image",
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Image"
-        }
-      ]
-    },
-    {
-      "type": "video",
-      "name": "Product Video",
-      "settings": [
-        {
-          "type": "url",
-          "id": "video_url",
-          "label": "Video URL"
-        }
-      ]
-    },
     {
       "type": "ingredient",
       "name": "Ingredient",
@@ -437,7 +669,6 @@
     {
       "name": "PDP Hero",
       "blocks": [
-        { "type": "image" },
         { "type": "ingredient", "settings": { "name": "Mango", "benefit": "Rich in Vit C" } },
         { "type": "ingredient", "settings": { "name": "Muskmelon", "benefit": "Rich in Vit C" } }
       ]
