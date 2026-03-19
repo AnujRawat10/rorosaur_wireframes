@@ -369,7 +369,9 @@
     margin:0;
   }
 
-  /* CTA -- hidden on mobile (sticky bar used instead) */
+  /* Hidden on mobile (sticky bar used instead) */
+  .pdp-hero__price-wrap{display:none}
+  .pdp-hero__variants{display:none}
   .pdp-hero__cta{display:none}
   .pdp-hero__trust{display:none}
 
@@ -428,11 +430,14 @@
       padding-top:10px;
     }
     .pdp-hero__desc{font-size:15px}
+
+    /* Show price, variants, CTA on desktop */
+    .pdp-hero__price-wrap{display:flex}
     .pdp-hero__price{font-size:30px}
     .pdp-hero__compare{font-size:18px}
+    .pdp-hero__variants{display:block;margin:14px 0}
     .pdp-hero__ingredients{max-width:100%;margin-top:16px}
 
-    /* Show CTA on desktop */
     .pdp-hero__cta{
       display:flex;
       align-items:stretch;
