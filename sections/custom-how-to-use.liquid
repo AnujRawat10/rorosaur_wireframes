@@ -1,0 +1,173 @@
+<section class="htu">
+  <div class="htu__container">
+    <h2 class="htu__heading">{{ section.settings.heading }}</h2>
+
+    <div class="htu__slider" id="htuSlider-{{ section.id }}">
+      {% for block in section.blocks %}
+        <div class="htu__slide" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            <img src="{{ block.settings.image | image_url: width: 600 }}" alt="{{ block.settings.title }}" loading="lazy">
+          {% endif %}
+          <h4>{{ block.settings.title }}</h4>
+          <p>{{ block.settings.text }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="htu__dots" id="htuDots-{{ section.id }}"></div>
+  </div>
+</section>
+
+<style>
+  .htu{
+    padding:30px 16px;
+    text-align:center;
+  }
+  .htu__container{
+    max-width:1200px;
+    margin:0 auto;
+  }
+  .htu__heading{
+    font-family:'Playfair Display',serif;
+    font-size:22px;
+    color:#ed2d5e;
+    margin:0 0 6px;
+  }
+  .htu__slider{
+    display:flex;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    gap:14px;
+    padding-top:18px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .htu__slider::-webkit-scrollbar{display:none}
+  .htu__slide{
+    flex:0 0 80%;
+    background:#fff;
+    border-radius:16px;
+    padding:16px;
+    scroll-snap-align:center;
+    box-shadow:0 4px 10px rgba(0,0,0,.05);
+  }
+  .htu__slide img{
+    width:100%;
+    height:170px;
+    object-fit:cover;
+    border-radius:12px;
+  }
+  .htu__slide h4{
+    margin:10px 0 4px;
+    font-size:15px;
+    color:#2B2D42;
+  }
+  .htu__slide p{
+    font-size:13px;
+    color:#6B7280;
+  }
+  /* dots */
+  .htu__dots{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    margin-top:14px;
+  }
+  .htu__dot{
+    width:8px;height:8px;
+    border-radius:50%;
+    background:#ccc;
+  }
+  .htu__dot.active{background:#ed2d5e}
+
+  /* ===== DESKTOP: grid ===== */
+  @media(min-width:750px){
+    .htu{padding:70px 20px}
+    .htu__heading{font-size:30px;margin-bottom:10px}
+    .htu__slider{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:30px;
+      overflow:visible;
+    }
+    .htu__slide{
+      flex:none;
+      width:auto;
+    }
+    .htu__slide img{height:240px}
+    .htu__slide h4{font-size:18px}
+    .htu__slide p{font-size:14px}
+    .htu__dots{display:none}
+  }
+</style>
+
+<script>
+  (function(){
+    const id = '{{ section.id }}';
+    const slider = document.getElementById('htuSlider-'+id);
+    const dotsWrap = document.getElementById('htuDots-'+id);
+    if(!slider || !dotsWrap) return;
+    const slides = slider.children;
+    for(let i=0;i<slides.length;i++){
+      const d = document.createElement('div');
+      d.classList.add('htu__dot');
+      if(i===0) d.classList.add('active');
+      dotsWrap.appendChild(d);
+    }
+    const dots = dotsWrap.children;
+    slider.addEventListener('scroll',()=>{
+      const idx = Math.round(slider.scrollLeft / slider.offsetWidth);
+      for(let i=0;i<dots.length;i++) dots[i].classList.remove('active');
+      if(dots[idx]) dots[idx].classList.add('active');
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "How to Use",
+  "class": "section-how-to-use",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How to Use"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Step Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Step Title",
+          "default": "Take 2 Scoops"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Step Description",
+          "default": "Add the recommended quantity to a bowl"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "How to Use",
+      "blocks": [
+        { "type": "step", "settings": { "title": "Take 2 Scoops", "text": "Add the recommended quantity to a bowl" } },
+        { "type": "step", "settings": { "title": "Mix with Water", "text": "Add warm water and stir well" } },
+        { "type": "step", "settings": { "title": "Feed Fresh", "text": "Serve immediately for best nutrition" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

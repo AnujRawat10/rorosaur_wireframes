@@ -1,0 +1,74 @@
+<section class="text-banner" style="background:{{ section.settings.bg_color }};color:{{ section.settings.text_color }}">
+  <div class="text-banner__container">
+    <h2 class="text-banner__heading">{{ section.settings.heading }}</h2>
+    {% if section.settings.body != blank %}
+      <p class="text-banner__body">{{ section.settings.body }}</p>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .text-banner{
+    padding:40px 20px;
+    text-align:center;
+  }
+  .text-banner__container{
+    max-width:800px;
+    margin:0 auto;
+  }
+  .text-banner__heading{
+    font-family:'Playfair Display',serif;
+    font-size:22px;
+    margin:0 0 10px;
+  }
+  .text-banner__body{
+    font-size:14px;
+    line-height:1.7;
+    opacity:.9;
+    color:inherit;
+    margin:0;
+  }
+  @media(min-width:750px){
+    .text-banner{padding:80px 40px}
+    .text-banner__heading{font-size:34px}
+    .text-banner__body{font-size:16px;max-width:700px;margin:0 auto}
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Text Banner",
+  "class": "section-text-banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Understanding the Digestion of Infants"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body Text",
+      "default": "Infant Guts and Digestive Systems continue to develop until 24 to 30 months and they need special care."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ed2d5e"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Text Banner"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,94 @@
+<section class="custom-video" style="background:{{ section.settings.bg_color }};color:{{ section.settings.text_color }}">
+  <div class="custom-video__container">
+    <h2 class="custom-video__heading">{{ section.settings.heading }}</h2>
+    {% if section.settings.subtext != blank %}
+      <p class="custom-video__sub">{{ section.settings.subtext }}</p>
+    {% endif %}
+    <div class="custom-video__wrap">
+      {% if section.settings.video_url != blank %}
+        <video src="{{ section.settings.video_url }}" controls playsinline style="width:100%;border-radius:12px"></video>
+      {% elsif section.settings.video_file != blank %}
+        <video src="{{ section.settings.video_file | file_url }}" controls playsinline style="width:100%;border-radius:12px"></video>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .custom-video{
+    padding:40px 16px;
+    text-align:center;
+  }
+  .custom-video__container{
+    max-width:1200px;
+    margin:0 auto;
+  }
+  .custom-video__heading{
+    font-family:'Playfair Display',serif;
+    font-size:22px;
+    margin:0 0 6px;
+  }
+  .custom-video__sub{
+    font-size:14px;
+    opacity:.85;
+    margin:0 0 20px;
+  }
+  .custom-video__wrap{
+    max-width:700px;
+    margin:20px auto 0;
+  }
+  @media(min-width:750px){
+    .custom-video{padding:70px 20px}
+    .custom-video__heading{font-size:30px}
+    .custom-video__sub{font-size:16px}
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Video Section",
+  "class": "section-video",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How It's Made"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "See how you can prepare clean, nutritious food for your baby"
+    },
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "Video URL"
+    },
+    {
+      "type": "text",
+      "id": "video_file",
+      "label": "Video Filename (from Files)",
+      "info": "Upload to Settings > Files, paste filename here"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ed2d5e"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video Section"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,145 @@
+<section class="ctm" style="background:{{ section.settings.bg_color }}">
+  <div class="ctm__container">
+    <h2 class="ctm__heading" style="color:{{ section.settings.heading_color }}">{{ section.settings.heading }}</h2>
+
+    <div class="ctm__list">
+      {% for block in section.blocks %}
+        <div class="ctm__card" {{ block.shopify_attributes }}>
+          <div class="ctm__stars">{{ block.settings.stars }}</div>
+          <p class="ctm__quote">"{{ block.settings.quote }}"</p>
+          {% if block.settings.author != blank %}
+            <span class="ctm__author">— {{ block.settings.author }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .ctm{
+    padding:40px 16px;
+    text-align:center;
+  }
+  .ctm__container{
+    max-width:1200px;
+    margin:0 auto;
+  }
+  .ctm__heading{
+    font-family:'Playfair Display',serif;
+    font-size:22px;
+    margin:0 0 20px;
+  }
+  /* mobile: horizontal scroll */
+  .ctm__list{
+    display:flex;
+    gap:14px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:8px;
+  }
+  .ctm__list::-webkit-scrollbar{display:none}
+  .ctm__card{
+    flex:0 0 85%;
+    background:#fff;
+    border:1px solid #E5E7EB;
+    border-radius:14px;
+    padding:24px 20px;
+    scroll-snap-align:center;
+    text-align:center;
+  }
+  .ctm__stars{
+    font-size:16px;
+    color:#f5a623;
+    margin-bottom:10px;
+  }
+  .ctm__quote{
+    font-size:15px;
+    color:#6B7280;
+    line-height:1.6;
+    font-style:italic;
+    margin:0 0 10px;
+  }
+  .ctm__author{
+    font-size:13px;
+    font-weight:600;
+    color:#2B2D42;
+  }
+
+  @media(min-width:750px){
+    .ctm{padding:70px 20px}
+    .ctm__heading{font-size:30px}
+    .ctm__list{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+      gap:24px;
+      overflow:visible;
+    }
+    .ctm__card{flex:none}
+    .ctm__quote{font-size:16px}
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "class": "section-testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Parents Are Saying"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ed2d5e"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "text",
+          "id": "stars",
+          "label": "Stars",
+          "default": "★★★★★"
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Finally something my baby enjoys AND digests easily. Total relief!"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author Name",
+          "default": "Priya M."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        { "type": "review", "settings": { "quote": "Finally something my baby enjoys AND digests easily. Total relief!", "author": "Priya M." } },
+        { "type": "review", "settings": { "quote": "My baby used to refuse food, now she finishes the bowl every time!", "author": "Sneha K." } },
+        { "type": "review", "settings": { "quote": "Clean ingredients, no drama at mealtime. Wish I found this sooner.", "author": "Anita R." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

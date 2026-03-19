@@ -1,0 +1,163 @@
+<section class="cpg">
+  <h2 class="cpg__heading">{{ section.settings.heading }}</h2>
+
+  <div class="cpg__grid">
+    {% for block in section.blocks %}
+      <div class="cpg__card" {{ block.shopify_attributes }}>
+        <div class="cpg__img-wrap">
+          {% if block.settings.image != blank %}
+            <img src="{{ block.settings.image | image_url: width: 500 }}" alt="{{ block.settings.title }}" loading="lazy">
+          {% endif %}
+        </div>
+        <div class="cpg__content">
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.description }}</p>
+          {% if block.settings.button_text != blank %}
+            <a href="{{ block.settings.button_link }}" class="cpg__btn">{{ block.settings.button_text }}</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<style>
+  .cpg{
+    padding:20px 0;
+  }
+  .cpg__heading{
+    font-family:'Playfair Display',serif;
+    text-align:center;
+    font-size:20px;
+    color:#ed2d5e;
+    margin:20px 12px 10px;
+  }
+  .cpg__grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    padding:12px;
+  }
+  .cpg__card{
+    background:#fff;
+    border-radius:14px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+  }
+  .cpg__img-wrap{
+    width:100%;
+    height:140px;
+    overflow:hidden;
+  }
+  .cpg__img-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .cpg__content{
+    padding:12px;
+    text-align:center;
+  }
+  .cpg__content h3{
+    font-size:14px;
+    color:#ed2d5e;
+    margin:0 0 4px;
+  }
+  .cpg__content p{
+    font-size:12px;
+    color:#6B7280;
+    margin:0 0 10px;
+  }
+  .cpg__btn{
+    display:block;
+    background:#ed2d5e;
+    color:#fff;
+    padding:11px;
+    border-radius:10px;
+    font-weight:600;
+    font-size:13px;
+    text-decoration:none;
+    text-align:center;
+  }
+  .cpg__btn:hover{opacity:.9}
+
+  @media(min-width:750px){
+    .cpg{padding:40px 0}
+    .cpg__heading{font-size:28px;margin:40px 0 20px}
+    .cpg__grid{
+      grid-template-columns:repeat(4,1fr);
+      max-width:1100px;
+      gap:24px;
+      padding:20px;
+      margin:0 auto;
+    }
+    .cpg__img-wrap{height:200px}
+    .cpg__content h3{font-size:16px}
+    .cpg__content p{font-size:13px}
+    .cpg__btn{padding:14px;font-size:14px}
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Product Grid",
+  "class": "section-product-grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Complete Your Baby's Nutrition"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_card",
+      "name": "Product Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Product Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Multigrain Mix"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "Supports weight gain & balanced nutrition"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Add to Cart"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Grid",
+      "blocks": [
+        { "type": "product_card", "settings": { "title": "Multigrain Mix", "description": "Supports weight gain & balanced nutrition" } },
+        { "type": "product_card", "settings": { "title": "Fruit Puree", "description": "Rich in fiber for easy digestion" } },
+        { "type": "product_card", "settings": { "title": "Daily Combo Pack", "description": "Best value for complete daily nutrition" } },
+        { "type": "product_card", "settings": { "title": "Starter Kit", "description": "Perfect for first-time parents" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
