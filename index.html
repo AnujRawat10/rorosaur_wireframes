@@ -201,7 +201,7 @@ p{color:var(--muted)}
 }
 .cross-sell{background:var(--primary);color:#fff;padding:70px;text-align:center}
 .how{padding:70px 0}
-.ugc{background:color:'#ffffff';padding:50px}
+.ugc{background:#ffffff;padding:50px}
 
 /* UGC Carousel */
 .ugc-carousel{display:flex;gap:16px;overflow-x:auto;padding-top:20px;scroll-snap-type:x mandatory}
@@ -261,8 +261,8 @@ p{color:var(--muted)}
     height:80vh;
   }
 }
-.hero-right .qty-cta{
-  display:none;
+@media(max-width:768px){
+  .hero-right .qty-cta{display:none}
 }
 /* FULL SCREEN IMAGE */
 .full-image-section{
@@ -524,11 +524,179 @@ p{color:var(--muted)}
 .bundle-card:hover{
   border-color:var(--primary);
 }
+/* Desktop/mobile title toggle */
+.hero-title-desktop{display:none}
+
+/* ===== MOBILE (default) ===== */
 @media(max-width:768px){
 .hero{flex-direction:column}
 .stat-grid{flex-direction:column;gap:20px}
 .why{flex-direction:column}
 .grid{grid-template-columns:1fr}
+}
+
+/* ===== DESKTOP OPTIMISATIONS ===== */
+@media(min-width:769px){
+
+  /* ---- Global ---- */
+  .container{max-width:1200px}
+  body{font-size:16px}
+
+  /* ---- Show/hide title ---- */
+  .hero-title-mobile{display:none}
+  .hero-title-desktop{display:block;margin-bottom:10px}
+  .hero-title-desktop h1{font-size:32px;margin:0 0 4px}
+  .hero-title-desktop .price{margin-top:8px}
+
+  /* ---- Top bar ---- */
+  .topbar{font-size:14px;letter-spacing:.5px;padding:10px}
+
+  /* ---- Hero: side-by-side ---- */
+  .hero{
+    display:flex;
+    flex-direction:row !important;
+    gap:40px;
+    padding:40px 0;
+    align-items:flex-start;
+  }
+  .hero-left{
+    flex:0 0 50%;
+    height:540px;
+    border-radius:16px;
+  }
+  .hero-right{
+    flex:1;
+    display:block;
+    padding-top:10px;
+  }
+  .hero-right .qty-cta{display:flex !important;margin-top:20px}
+
+  /* ---- Mini ingredients in hero ---- */
+  .mini-ingredients{max-width:100%;margin-top:15px}
+
+  /* ---- Highlight sections ---- */
+  .highlight{padding:80px 40px}
+  .highlight h2{font-size:34px;max-width:800px;margin:0 auto 10px}
+  .highlight p{max-width:700px;margin:10px auto 0;font-size:16px;line-height:1.7}
+
+  /* ---- Why section ---- */
+  .why{
+    display:flex;
+    flex-direction:row !important;
+    gap:50px;
+    align-items:center;
+    padding:70px 0;
+  }
+  .why>div{flex:1}
+  .why img{height:420px;object-fit:cover;border-radius:16px}
+  .why h2{font-size:30px;margin-bottom:16px}
+  .why p{font-size:16px;line-height:1.7}
+
+  /* ---- Full image sections ---- */
+  .full-image-section,.full-image-section1,.full-image-section2,.full-image-section3{
+    max-height:70vh;
+    overflow:hidden;
+  }
+  .full-image-section1{
+    max-width:1200px;
+    margin:0 auto;
+    padding:0 20px;
+  }
+  .full-image-section img,.full-image-section1 img,.full-image-section2 img,.full-image-section3 img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+
+  /* ---- Stats ---- */
+  .stats{padding:80px 40px}
+  .stat-grid{gap:60px}
+  .stat-grid h3{font-size:42px}
+
+  /* ---- Ingredients section ---- */
+  .ingredients{padding:40px 0 !important}
+  .ingredients-grid{
+    grid-template-columns:repeat(4,1fr) !important;
+    max-width:1100px !important;
+    gap:24px;
+    padding:20px;
+    margin:auto;
+  }
+  .img-wrap{height:200px}
+  .ingredients-heading{font-size:28px;margin:40px 0 20px}
+  .card-content h3{font-size:16px !important}
+  .card-content p{font-size:13px !important}
+  .card-btn{padding:14px !important;font-size:14px !important}
+
+  /* ---- How-to carousel → grid on desktop ---- */
+  .how-carousel{padding:70px 0}
+  .how-carousel h2{font-size:30px;margin-bottom:10px}
+  .how-slider{
+    display:grid !important;
+    grid-template-columns:repeat(3,1fr);
+    gap:30px;
+    overflow:visible;
+  }
+  .how-slide{
+    flex:none;
+    width:auto;
+  }
+  .how-slide img{height:240px}
+  .how-slide h4{font-size:18px}
+  .how-slide p{font-size:14px}
+  .how-dots{display:none}
+
+  /* ---- Authority (video) ---- */
+  .authority{padding:70px 20px}
+  .authority h2{font-size:30px}
+  .authority p{font-size:16px}
+
+  /* ---- Timeline ---- */
+  .timeline{padding:70px 20px}
+  .timeline h2{font-size:30px;margin-bottom:20px}
+  .timeline img{max-width:700px}
+
+  /* ---- UGC ---- */
+  .ugc{padding:70px 40px}
+  .ugc h2{font-size:30px;text-align:center;margin-bottom:10px}
+  .ugc-carousel{justify-content:center;gap:24px}
+  .ugc-item{flex:0 0 300px;height:440px}
+  .ugc-wrap{max-width:1100px;margin:auto}
+
+  /* ---- Reviews ---- */
+  .reviews{padding:70px 20px}
+  .reviews h2{font-size:30px}
+  .reviews p{font-size:18px;max-width:650px;margin:15px auto 0;line-height:1.6}
+
+  /* ---- FAQ ---- */
+  .faq{max-width:750px;margin:auto;padding:70px 20px}
+  .faq h2{font-size:30px;margin-bottom:24px}
+  .faq details{padding:14px 0;border-bottom:1px solid var(--border)}
+  .faq summary{font-size:16px;cursor:pointer;font-weight:500;padding:4px 0}
+  .faq details p{font-size:14px;line-height:1.6;padding:8px 0}
+
+  /* ---- Sticky bar → centred, refined ---- */
+  .sticky-cart{padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.08)}
+  .sticky-inner{max-width:500px}
+  .sticky-price{font-size:20px}
+  .sticky-btn{padding:16px 40px;font-size:16px;border-radius:12px;transition:.2s}
+  .sticky-btn:hover{opacity:.9;transform:scale(1.02)}
+
+  /* ---- Drawer → centred modal on desktop ---- */
+  .drawer{
+    width:500px;
+    left:50%;
+    transform:translateX(-50%);
+    border-radius:20px 20px 0 0;
+    height:auto;
+    max-height:70vh;
+  }
+  .drawer-content{padding:30px}
+  .bundle-card{min-width:160px;padding:14px}
+  .bundle-card img{height:100px}
+
+  /* ---- Cross-sell ---- */
+  .cross-sell{padding:80px 40px}
 }
 </style>
 </head>
@@ -537,7 +705,7 @@ p{color:var(--muted)}
 
 <div class="topbar">Free Shipping + COD Available | Limited Stock</div>
 <!-- ADD THIS JUST AFTER TOPBAR (NEW TITLE ABOVE HERO) -->
-<section class="container" >
+<section class="container hero-title-mobile">
   <h1>Muskmelon Mango Baby Puree</h1>
   <div class="rating">★★★★★ 4.8 (1434+ parents)</div>
 </section>
@@ -556,75 +724,38 @@ p{color:var(--muted)}
     <div class="hero-dot" onclick="showSlide(1)"></div>
   </div>
 </div>
+<div class="hero-right">
+<div class="hero-title-desktop">
+  <h1>Muskmelon Mango Baby Puree</h1>
+  <div class="rating">★★★★★ 4.8 (1434+ parents)</div>
+  <p class="price">₹749 <span class="strike">₹999</span></p>
+</div>
 <p>Craft fully Created to taste wonderful and Balance the Sugars and the Vitamins.
 All products are made only with Traditional Natural Ingredients for your peace of mind.
 </p>
-  <!-- <div class="hero-slide">
-    <video src="YOUR_VIDEO_URL.mp4" muted autoplay loop playsinline></video>
-  </div>
 
-  <div class="hero-nav">
-    <div class="hero-dot active" onclick="showSlide(0)"></div>
-    <div class="hero-dot" onclick="showSlide(1)"></div>
-  </div> -->
-</div>
 <section class="mini-ingredients">
   <div class="container">
-
-    <!-- Accordion Header -->
     <div class="accordion-header" onclick="toggleIngredients()">
       <span>Key Ingredients</span>
       <i class="fa fa-chevron-down" id="accIcon"></i>
     </div>
-
-    <!-- Accordion Content -->
     <div class="accordion-content" id="ingredientsContent">
-
       <div class="mini-wrap">
-
         <div class="mini-item">
           <img src="mango.jpg" alt="Mango">
           <h4>Mango</h4>
           <p>Rich in vit C</p>
         </div>
-
         <div class="mini-item">
           <img src="muskmelon.jpg" alt="Muskmelon">
           <h4>Muskmelon</h4>
           <p>Rich in vit C</p>
         </div>
-
       </div>
-
     </div>
-
   </div>
 </section>
-<div class="hero-right">
-
-  
-<!-- <div class="badge">No Added Sugar</div>
-<div class="badge">100% Natural</div> -->
-
-<!-- <h1>Finally, A Baby Food That’s Easy to Digest & Actually Loved by Kids</h1>
-<p>No more fuss, constipation or incomplete nutrition. Designed for growing babies.</p> -->
-
-
-<!-- <p class="price">₹749 <span class="strike">₹999</span></p> -->
-
-<!-- <div class="variant active" onclick="openDrawer()"><div>
-<strong>Starter Pack</strong><br>
-<small>Perfect for first-time parents</small>
-</div>
-<div>₹749</div>
-</div>
-
-<div class="variant" onclick="openDrawer()"><div>
-<strong>Value Combo</strong><br>
-<small>Save more + better results</small>
-</div>
-<div>₹1349</div>
-</div>
 
 <div class="qty-cta">
   <div class="qty">
@@ -633,15 +764,11 @@ All products are made only with Traditional Natural Ingredients for your peace o
     <button aria-label="increase">+</button>
   </div>
   <div class="cta-btn">BUY IT NOW</div>
-</div> -->
+</div>
+<p style="margin-top:10px;font-size:12px;color:var(--muted)">✔ Loved by 1000+ parents &nbsp; ✔ Safe for daily use &nbsp; ✔ No preservatives</p>
 
-  
-
-<!-- </div>
-
-<p style="margin-top:10px;font-size:10px">✔ Loved by 1000+ parents &nbsp; ✔ Safe for daily use &nbsp; ✔ No preservatives</p>
-</div> -->
-</section>
+</div><!-- /hero-right -->
+</section><!-- /hero -->
 <section class="authority">
   <h2>How It's Made</h2>
   <p style="color: #fff8ed;">See how we you can prepare clean, nutritious food for your baby</p>
@@ -685,7 +812,6 @@ Rorosaur is designed to be gentle, nutritious, and parent-approved.</p>
 </section>
 <section class="full-image-section1">
   <img src="Nutrition_Callout_Banner_5.webp" alt="Baby enjoying food">
-</section>
 </section>
 <section class="full-image-section2">
   <img src="MM1_7_Comparison.webp" alt="Baby enjoying food">
