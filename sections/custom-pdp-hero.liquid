@@ -67,7 +67,40 @@
     </div>
 
     <!-- Description (mobile only, below gallery) -->
-    <div class="pdp-hero__desc pdp-hero__desc--mobile">{{ product.description }}</div>
+    <div class="pdp-hero__desc pdp-hero__desc--mobile">
+      {% if section.settings.custom_description != blank %}
+        {{ section.settings.custom_description }}
+      {% else %}
+        {{ product.description }}
+      {% endif %}
+    </div>
+
+    <!-- Ingredients (mobile only, inline below description) -->
+    {% assign ingredient_blocks = section.blocks | where: 'type', 'ingredient' %}
+    {% if section.settings.show_ingredients and ingredient_blocks.size > 0 %}
+      <div class="pdp-hero__ing-mobile">
+        <h3 class="pdp-hero__ing-mobile-title">{{ section.settings.ingredients_title | default: 'Key Ingredients' }}</h3>
+        <div class="pdp-hero__ing-mobile-list {% if section.settings.ingredients_layout == 'list' %}pdp-hero__ing-mobile-list--row{% endif %}">
+          {% for block in ingredient_blocks %}
+            <div class="pdp-hero__ing-mobile-item" {{ block.shopify_attributes }}>
+              <div class="pdp-hero__ingredient-icon" style="
+                width:{{ section.settings.icon_size }}px;
+                height:{{ section.settings.icon_size }}px;
+                {% if block.settings.icon_bg_color != blank and block.settings.icon_bg_color != 'rgba(0,0,0,0)' %}background:{{ block.settings.icon_bg_color }};border-radius:50%;padding:8px;{% endif %}
+              ">
+                {% if block.settings.custom_svg != blank %}
+                  {{ block.settings.custom_svg }}
+                {% elsif block.settings.icon != blank %}
+                  <img src="{{ block.settings.icon | image_url: width: 200 }}" alt="{{ block.settings.name }}">
+                {% endif %}
+              </div>
+              <h4>{{ block.settings.name }}</h4>
+              <p>{{ block.settings.benefit }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
 
     <!-- ========== INFO COLUMN ========== -->
     <div class="pdp-hero__info">
@@ -104,7 +137,13 @@
       <hr class="pdp-hero__hr">
 
       <!-- Description -->
-      <div class="pdp-hero__desc">{{ product.description }}</div>
+      <div class="pdp-hero__desc">
+        {% if section.settings.custom_description != blank %}
+          {{ section.settings.custom_description }}
+        {% else %}
+          {{ product.description }}
+        {% endif %}
+      </div>
 
       <!-- Variant selector -->
       {% if product.variants.size > 1 %}
@@ -469,6 +508,55 @@
   .pdp-hero__info .pdp-hero__desc{display:none}
 
   /* ===========================
+     MOBILE INGREDIENTS (inline, no accordion)
+     =========================== */
+  .pdp-hero__ing-mobile{
+    margin:16px 0 8px;
+  }
+  .pdp-hero__ing-mobile-title{
+    font-family:var(--font-heading-family, 'Playfair Display', serif);
+    font-size:16px;
+    font-weight:600;
+    color:var(--color-foreground, #121212);
+    margin:0 0 12px;
+  }
+  .pdp-hero__ing-mobile-list{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    justify-content:flex-start;
+    text-align:center;
+  }
+  .pdp-hero__ing-mobile-list--row{
+    flex-direction:column;
+    gap:14px;
+  }
+  .pdp-hero__ing-mobile-list--row .pdp-hero__ing-mobile-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-align:left;
+  }
+  .pdp-hero__ing-mobile-list--row .pdp-hero__ingredient-icon{
+    margin:0;
+    flex-shrink:0;
+  }
+  .pdp-hero__ing-mobile-item h4{
+    margin:4px 0 1px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--color-foreground, #121212);
+  }
+  .pdp-hero__ing-mobile-item p{
+    font-size:11px;
+    color:rgba(var(--color-foreground-rgb, 18, 18, 18), 0.6);
+    margin:0;
+    line-height:1.3;
+  }
+  /* Hide desktop accordion on mobile */
+  .pdp-hero__ingredients{display:none}
+
+  /* ===========================
      HIDDEN ON MOBILE
      =========================== */
   .pdp-hero__price-wrap{display:none}
@@ -492,7 +580,9 @@
     }
     .pdp-hero__title-mobile{display:none}
     .pdp-hero__desc--mobile{display:none}
+    .pdp-hero__ing-mobile{display:none}
     .pdp-hero__info .pdp-hero__desc{display:block}
+    .pdp-hero__ingredients{display:block}
     .pdp-hero__title-desktop{display:block;margin-bottom:4px}
     .pdp-hero__name{
       font-size:28px;
@@ -750,7 +840,17 @@
     },
     {
       "type": "header",
-      "content": "Key Ingredients Accordion"
+      "content": "Description"
+    },
+    {
+      "type": "richtext",
+      "id": "custom_description",
+      "label": "Custom Description",
+      "info": "Leave empty to auto-fetch from product description"
+    },
+    {
+      "type": "header",
+      "content": "Key Ingredients"
     },
     {
       "type": "checkbox",
