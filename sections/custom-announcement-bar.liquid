@@ -1,6 +1,6 @@
 {{ 'custom-announcement-bar.css' | asset_url | stylesheet_tag }}
 
-<div class="announcement-bar" style="background:{{ section.settings.bg_color }};color:{{ section.settings.text_color }}">
+<div class="announcement-bar color-{{ section.settings.color_scheme }}" style="background:{{ section.settings.bg_color }};color:{{ section.settings.text_color }}">
   <div class="announcement-bar__inner">
     {% for block in section.blocks %}
       <span class="announcement-bar__text">{{ block.settings.text }}</span>
@@ -14,6 +14,7 @@
     text-align:center;
     padding:10px 16px;
     font-size:12px;
+    font-family:var(--font-body-family, sans-serif);
     font-weight:500;
     letter-spacing:.3px;
     line-height:1.4;
@@ -42,6 +43,12 @@
   "name": "Custom Announcement Bar",
   "class": "section-announcement",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
     {
       "type": "color",
       "id": "bg_color",

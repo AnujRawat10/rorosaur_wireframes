@@ -1,4 +1,4 @@
-<section class="htu">
+<section class="htu color-{{ section.settings.color_scheme }}">
   <div class="htu__container">
     <h2 class="htu__heading">{{ section.settings.heading }}</h2>
 
@@ -22,15 +22,16 @@
   .htu{
     padding:30px 16px;
     text-align:center;
+    background:var(--color-background, #fff);
   }
   .htu__container{
     max-width:1200px;
     margin:0 auto;
   }
   .htu__heading{
-    font-family:'Playfair Display',serif;
+    font-family:var(--font-heading-family, 'Playfair Display', serif);
     font-size:22px;
-    color:#ed2d5e;
+    color:var(--color-base-accent-1, #ed2d5e);
     margin:0 0 6px;
   }
   .htu__slider{
@@ -44,7 +45,7 @@
   .htu__slider::-webkit-scrollbar{display:none}
   .htu__slide{
     flex:0 0 80%;
-    background:#fff;
+    background:var(--color-background, #fff);
     border-radius:16px;
     padding:16px;
     scroll-snap-align:center;
@@ -59,11 +60,11 @@
   .htu__slide h4{
     margin:10px 0 4px;
     font-size:15px;
-    color:#2B2D42;
+    color:var(--color-foreground, #2B2D42);
   }
   .htu__slide p{
     font-size:13px;
-    color:#6B7280;
+    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
   }
   /* dots */
   .htu__dots{
@@ -77,7 +78,7 @@
     border-radius:50%;
     background:#ccc;
   }
-  .htu__dot.active{background:#ed2d5e}
+  .htu__dot.active{background:var(--color-base-accent-1, #ed2d5e)}
 
   /* ===== DESKTOP: grid ===== */
   @media(min-width:750px){
@@ -132,6 +133,12 @@
       "id": "heading",
       "label": "Heading",
       "default": "How to Use"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
     }
   ],
   "blocks": [

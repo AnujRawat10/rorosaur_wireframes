@@ -1,4 +1,4 @@
-<section class="cpg">
+<section class="cpg color-{{ section.settings.color_scheme }}">
   <h2 class="cpg__heading">{{ section.settings.heading }}</h2>
 
   <div class="cpg__grid">
@@ -24,12 +24,13 @@
 <style>
   .cpg{
     padding:20px 0;
+    background:var(--color-background, #fff);
   }
   .cpg__heading{
-    font-family:'Playfair Display',serif;
+    font-family:var(--font-heading-family, 'Playfair Display', serif);
     text-align:center;
     font-size:20px;
-    color:#ed2d5e;
+    color:var(--color-base-accent-1, #ed2d5e);
     margin:20px 12px 10px;
   }
   .cpg__grid{
@@ -39,7 +40,7 @@
     padding:12px;
   }
   .cpg__card{
-    background:#fff;
+    background:var(--color-background, #fff);
     border-radius:14px;
     overflow:hidden;
     display:flex;
@@ -62,17 +63,17 @@
   }
   .cpg__content h3{
     font-size:14px;
-    color:#ed2d5e;
+    color:var(--color-base-accent-1, #ed2d5e);
     margin:0 0 4px;
   }
   .cpg__content p{
     font-size:12px;
-    color:#6B7280;
+    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
     margin:0 0 10px;
   }
   .cpg__btn{
     display:block;
-    background:#ed2d5e;
+    background:var(--color-base-accent-1, #ed2d5e);
     color:#fff;
     padding:11px;
     border-radius:10px;
@@ -110,6 +111,12 @@
       "id": "heading",
       "label": "Heading",
       "default": "Complete Your Baby's Nutrition"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
     }
   ],
   "blocks": [

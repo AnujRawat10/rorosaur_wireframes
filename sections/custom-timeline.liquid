@@ -1,4 +1,4 @@
-<section class="ctl-timeline">
+<section class="ctl-timeline color-{{ section.settings.color_scheme }}">
   <div class="ctl-timeline__container">
     <h2 class="ctl-timeline__heading">{{ section.settings.heading }}</h2>
 
@@ -19,7 +19,7 @@
 
 <style>
   .ctl-timeline{
-    background:#fff;
+    background:var(--color-background, #fff);
     padding:30px 16px;
     text-align:center;
   }
@@ -28,9 +28,9 @@
     margin:0 auto;
   }
   .ctl-timeline__heading{
-    font-family:'Playfair Display',serif;
+    font-family:var(--font-heading-family, 'Playfair Display', serif);
     font-size:22px;
-    color:#ed2d5e;
+    color:var(--color-base-accent-1, #ed2d5e);
     margin:0 0 16px;
   }
   .ctl-timeline__img{
@@ -41,7 +41,7 @@
   }
   .ctl-timeline__body{
     font-size:14px;
-    color:#6B7280;
+    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
     line-height:1.6;
   }
   @media(min-width:750px){
@@ -72,6 +72,12 @@
       "id": "body",
       "label": "Body Text",
       "default": "Less bloating and smoother feeding experience."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
     }
   ],
   "presets": [

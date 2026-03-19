@@ -1,5 +1,5 @@
 <!-- STICKY BAR -->
-<div class="csc-bar" id="cscBar-{{ section.id }}">
+<div class="csc-bar color-{{ section.settings.color_scheme }}" id="cscBar-{{ section.id }}">
   <div class="csc-bar__inner">
     <div class="csc-bar__price">
       {{ section.settings.price }} <span>{{ section.settings.label }}</span>
@@ -17,7 +17,7 @@
 
     <div class="csc-drawer__header">
       <h3>{{ section.settings.drawer_title }}</h3>
-      <span class="csc-drawer__close" id="cscClose-{{ section.id }}">✕</span>
+      <span class="csc-drawer__close" id="cscClose-{{ section.id }}">&#10005;</span>
     </div>
 
     <!-- BUNDLES -->
@@ -55,7 +55,7 @@
     <!-- QTY + CTA -->
     <div class="csc-qty-cta">
       <div class="csc-qty">
-        <button class="csc-qty__btn" data-action="decrease">−</button>
+        <button class="csc-qty__btn" data-action="decrease">&#8722;</button>
         <span class="csc-qty__val">1</span>
         <button class="csc-qty__btn" data-action="increase">+</button>
       </div>
@@ -71,8 +71,8 @@
     position:fixed;
     bottom:0;left:0;
     width:100%;
-    background:#fff;
-    border-top:1px solid #E5E7EB;
+    background:var(--color-background, #fff);
+    border-top:1px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
     padding:10px 16px;
     z-index:999;
   }
@@ -86,15 +86,15 @@
   .csc-bar__price{
     font-weight:700;
     font-size:18px;
-    color:#ed2d5e;
+    color:var(--color-base-accent-1, #ed2d5e);
   }
   .csc-bar__price span{
     font-size:12px;
-    color:#6B7280;
+    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
     font-weight:400;
   }
   .csc-bar__btn{
-    background:#ed2d5e;
+    background:var(--color-base-accent-1, #ed2d5e);
     color:#fff;
     padding:13px 22px;
     border-radius:10px;
@@ -124,7 +124,7 @@
     bottom:-100%;
     left:0;
     width:100%;
-    background:#fff;
+    background:var(--color-background, #fff);
     border-radius:20px 20px 0 0;
     box-shadow:0 -10px 30px rgba(0,0,0,.2);
     transition:bottom .4s ease;
@@ -146,13 +146,13 @@
   }
   .csc-drawer__header h3{
     font-size:18px;
-    color:#2B2D42;
+    color:var(--color-foreground, #2B2D42);
     margin:0;
   }
   .csc-drawer__close{
     font-size:20px;
     cursor:pointer;
-    color:#6B7280;
+    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
     padding:4px;
   }
   .csc-drawer__section{
@@ -161,7 +161,7 @@
   .csc-drawer__section h4{
     font-size:14px;
     margin:0 0 10px;
-    color:#2B2D42;
+    color:var(--color-foreground, #2B2D42);
   }
   /* Bundles */
   .csc-bundle-grid{
@@ -172,8 +172,8 @@
   .csc-bundle-grid::-webkit-scrollbar{display:none}
   .csc-bundle-card{
     min-width:120px;
-    background:#fff;
-    border:1px solid #E5E7EB;
+    background:var(--color-background, #fff);
+    border:1px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
     border-radius:10px;
     padding:10px;
     text-align:center;
@@ -188,43 +188,43 @@
   }
   .csc-bundle-card p{
     font-size:12px;
-    color:#6B7280;
+    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
     margin:0 0 2px;
   }
   .csc-bundle-card span{
     font-size:12px;
     font-weight:600;
-    color:#2B2D42;
+    color:var(--color-foreground, #2B2D42);
   }
-  .csc-bundle-card:hover{border-color:#ed2d5e}
+  .csc-bundle-card:hover{border-color:var(--color-base-accent-1, #ed2d5e)}
   /* Variants */
   .csc-variant{
-    border:2px solid #E5E7EB;
+    border:2px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
     padding:14px 16px;
     border-radius:10px;
     margin-bottom:8px;
     font-size:14px;
     font-weight:500;
     cursor:pointer;
-    color:#2B2D42;
+    color:var(--color-foreground, #2B2D42);
   }
-  .csc-variant--active{border-color:#2B2D42}
+  .csc-variant--active{border-color:var(--color-foreground, #2B2D42)}
   /* Qty + CTA */
   .csc-qty-cta{
     display:flex;
     align-items:stretch;
     margin-top:14px;
-    border:1px solid #E5E7EB;
+    border:1px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
     border-radius:10px;
     overflow:hidden;
-    background:#fff;
+    background:var(--color-background, #fff);
   }
   .csc-qty{
     display:flex;
     align-items:center;
     gap:14px;
     padding:0 14px;
-    background:#F7F7F7;
+    background:rgba(var(--color-foreground-rgb, 43, 45, 66), 0.04);
   }
   .csc-qty__btn{
     all:unset;
@@ -239,7 +239,7 @@
   }
   .csc-cta-btn{
     flex:1;
-    background:#2B2D42;
+    background:var(--color-button, #2B2D42);
     color:#fff;
     border:none;
     font-weight:700;
@@ -349,6 +349,12 @@
       "id": "cta_text",
       "label": "Drawer CTA Text",
       "default": "Add to Cart"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
     }
   ],
   "blocks": [

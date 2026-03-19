@@ -1,4 +1,4 @@
-<section class="cfaq" style="background:{{ section.settings.bg_color }}">
+<section class="cfaq color-{{ section.settings.color_scheme }}" style="background:{{ section.settings.bg_color }}">
   <div class="cfaq__container">
     <h2 class="cfaq__heading" style="color:{{ section.settings.heading_color }}">{{ section.settings.heading }}</h2>
 
@@ -20,19 +20,19 @@
     margin:0 auto;
   }
   .cfaq__heading{
-    font-family:'Playfair Display',serif;
+    font-family:var(--font-heading-family, 'Playfair Display', serif);
     font-size:22px;
     margin:0 0 16px;
   }
   .cfaq__item{
-    border-bottom:1px solid #E5E7EB;
+    border-bottom:1px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
     padding:14px 0;
   }
   .cfaq__q{
     cursor:pointer;
     font-weight:500;
     font-size:14px;
-    color:#2B2D42;
+    color:var(--color-foreground, #2B2D42);
     list-style:none;
     display:flex;
     justify-content:space-between;
@@ -43,7 +43,7 @@
     content:'+';
     font-size:20px;
     font-weight:300;
-    color:#6B7280;
+    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
     transition:transform .3s;
   }
   details[open] .cfaq__q::after{
@@ -51,7 +51,7 @@
   }
   .cfaq__a{
     font-size:13px;
-    color:#6B7280;
+    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
     line-height:1.6;
     padding:10px 0 4px;
   }
@@ -74,6 +74,12 @@
       "id": "heading",
       "label": "Heading",
       "default": "FAQs"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
     },
     {
       "type": "color",

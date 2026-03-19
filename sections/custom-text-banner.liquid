@@ -1,4 +1,4 @@
-<section class="text-banner" style="background:{{ section.settings.bg_color }};color:{{ section.settings.text_color }}">
+<section class="text-banner color-{{ section.settings.color_scheme }}" style="background:{{ section.settings.bg_color }};color:{{ section.settings.text_color }}">
   <div class="text-banner__container">
     <h2 class="text-banner__heading">{{ section.settings.heading }}</h2>
     {% if section.settings.body != blank %}
@@ -17,7 +17,7 @@
     margin:0 auto;
   }
   .text-banner__heading{
-    font-family:'Playfair Display',serif;
+    font-family:var(--font-heading-family, 'Playfair Display', serif);
     font-size:22px;
     margin:0 0 10px;
   }
@@ -51,6 +51,12 @@
       "id": "body",
       "label": "Body Text",
       "default": "Infant Guts and Digestive Systems continue to develop until 24 to 30 months and they need special care."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
     },
     {
       "type": "color",

@@ -1,4 +1,4 @@
-<section class="img-banner {% if section.settings.full_width %}img-banner--full{% endif %} {% if section.settings.show_button %}img-banner--has-btn{% endif %}">
+<section class="img-banner color-{{ section.settings.color_scheme }} {% if section.settings.full_width %}img-banner--full{% endif %} {% if section.settings.show_button %}img-banner--has-btn{% endif %}">
   {% if section.settings.image != blank %}
     <img
       src="{{ section.settings.image | image_url: width: 1600 }}"
@@ -39,7 +39,7 @@
     bottom:20px;
     left:50%;
     transform:translateX(-50%);
-    background:#ed2d5e;
+    background:var(--color-base-accent-1, #ed2d5e);
     color:#fff;
     padding:12px 24px;
     border-radius:30px;
@@ -106,6 +106,12 @@
       "type": "url",
       "id": "button_link",
       "label": "Button Link"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
     }
   ],
   "presets": [

@@ -2,18 +2,18 @@
 
 {% if product != blank %}
 
-<div class="pdp-hero" data-section="{{ section.id }}">
+<div class="pdp-hero color-{{ section.settings.color_scheme }}" data-section="{{ section.id }}">
   <div class="pdp-hero__container">
 
     <!-- TITLE (mobile only, above gallery) -->
     <div class="pdp-hero__title-mobile">
       <h1 class="pdp-hero__name">{{ product.title }}</h1>
       <div class="pdp-hero__rating">
-        ★★★★★ {{ section.settings.rating }} ({{ section.settings.review_count }})
+        &#9733;&#9733;&#9733;&#9733;&#9733; {{ section.settings.rating }} ({{ section.settings.review_count }})
       </div>
     </div>
 
-    <!-- IMAGE GALLERY — pulled from product.media -->
+    <!-- IMAGE GALLERY -->
     <div class="pdp-hero__gallery" id="pdpGallery-{{ section.id }}">
       {%- for media in product.media -%}
         <div class="pdp-hero__slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
@@ -53,7 +53,7 @@
               </div>
             {%- else -%}
               <div class="pdp-hero__thumb {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.index0 }}">
-                <div class="pdp-hero__thumb-play">▶</div>
+                <div class="pdp-hero__thumb-play">&#9654;</div>
               </div>
             {%- endif -%}
           {%- endfor -%}
@@ -69,16 +69,16 @@
         <h1 class="pdp-hero__name">{{ product.title }}</h1>
         {% if product.metafields.reviews.rating.value != blank %}
           <div class="pdp-hero__rating">
-            ★★★★★ {{ product.metafields.reviews.rating.value }} ({{ product.metafields.reviews.rating_count.value }} reviews)
+            &#9733;&#9733;&#9733;&#9733;&#9733; {{ product.metafields.reviews.rating.value }} ({{ product.metafields.reviews.rating_count.value }} reviews)
           </div>
         {% elsif section.settings.rating != blank %}
           <div class="pdp-hero__rating">
-            ★★★★★ {{ section.settings.rating }} ({{ section.settings.review_count }})
+            &#9733;&#9733;&#9733;&#9733;&#9733; {{ section.settings.rating }} ({{ section.settings.review_count }})
           </div>
         {% endif %}
       </div>
 
-      <!-- PRICE — from product object -->
+      <!-- PRICE -->
       <div class="pdp-hero__price-wrap">
         <span class="pdp-hero__price">{{ product.selected_or_first_available_variant.price | money }}</span>
         {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
@@ -89,7 +89,7 @@
         {% endif %}
       </div>
 
-      <!-- DESCRIPTION — from product -->
+      <!-- DESCRIPTION -->
       <div class="pdp-hero__desc">{{ product.description }}</div>
 
       <!-- VARIANT SELECTOR (if multiple variants) -->
@@ -117,7 +117,7 @@
         </div>
       {% endif %}
 
-      <!-- KEY INGREDIENTS ACCORDION (from blocks — only extra content) -->
+      <!-- KEY INGREDIENTS ACCORDION -->
       {% assign ingredient_blocks = section.blocks | where: 'type', 'ingredient' %}
       {% if section.settings.show_ingredients and ingredient_blocks.size > 0 %}
         <div class="pdp-hero__ingredients">
@@ -141,13 +141,13 @@
         </div>
       {% endif %}
 
-      <!-- QTY + ADD TO CART (real Shopify form) -->
+      <!-- QTY + ADD TO CART -->
       {%- form 'product', product, id: 'pdpForm', data-section: section.id -%}
         <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" id="pdpVariantId-{{ section.id }}">
 
         <div class="pdp-hero__cta">
           <div class="pdp-hero__qty">
-            <button type="button" class="pdp-hero__qty-btn" data-action="decrease" aria-label="Decrease quantity">−</button>
+            <button type="button" class="pdp-hero__qty-btn" data-action="decrease" aria-label="Decrease quantity">&#8722;</button>
             <input type="number" name="quantity" value="1" min="1" class="pdp-hero__qty-val" aria-label="Quantity">
             <button type="button" class="pdp-hero__qty-btn" data-action="increase" aria-label="Increase quantity">+</button>
           </div>
@@ -175,15 +175,16 @@
 </div>
 
 {% else %}
-  <!-- No product selected — show placeholder in editor -->
-  <div class="pdp-hero" style="padding:60px 20px;text-align:center">
-    <p style="color:#6B7280">Select a product in section settings to display the PDP hero.</p>
+  <!-- No product selected -->
+  <div class="pdp-hero color-{{ section.settings.color_scheme }}" style="padding:60px 20px;text-align:center">
+    <p style="color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7)">Select a product in section settings to display the PDP hero.</p>
   </div>
 {% endif %}
 
 <style>
   .pdp-hero{
     padding:0 16px;
+    background:var(--color-background, #fff);
   }
   .pdp-hero__container{
     max-width:1200px;
@@ -193,14 +194,14 @@
   /* TITLE MOBILE */
   .pdp-hero__title-desktop{display:none}
   .pdp-hero__name{
-    font-family:'Playfair Display',serif;
+    font-family:var(--font-heading-family, 'Playfair Display', serif);
     font-size:22px;
     margin:12px 0 2px;
-    color:#ed2d5e;
+    color:var(--color-base-accent-1, #ed2d5e);
   }
   .pdp-hero__rating{
     font-size:13px;
-    color:#ed2d5e;
+    color:var(--color-base-accent-1, #ed2d5e);
     margin-bottom:8px;
   }
 
@@ -215,7 +216,7 @@
   .pdp-hero__price{
     font-size:26px;
     font-weight:700;
-    color:#ed2d5e;
+    color:var(--color-base-accent-1, #ed2d5e);
   }
   .pdp-hero__compare{
     text-decoration:line-through;
@@ -223,7 +224,7 @@
     font-size:16px;
   }
   .pdp-hero__badge-sale{
-    background:#ed2d5e;
+    background:var(--color-base-accent-1, #ed2d5e);
     color:#fff;
     font-size:11px;
     font-weight:700;
@@ -234,7 +235,7 @@
   /* GALLERY */
   .pdp-hero__gallery{
     position:relative;
-    background:#fff;
+    background:var(--color-background, #fff);
     border-radius:12px;
     overflow:hidden;
     height:380px;
@@ -266,15 +267,15 @@
     background:#ddd;
     cursor:pointer;
   }
-  .pdp-hero__dot.active{background:#ed2d5e}
+  .pdp-hero__dot.active{background:var(--color-base-accent-1, #ed2d5e)}
 
-  /* Thumbnails — hidden on mobile */
+  /* Thumbnails -- hidden on mobile */
   .pdp-hero__thumbs{display:none}
 
   /* DESCRIPTION */
   .pdp-hero__desc{
     font-size:14px;
-    color:#6B7280;
+    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
     line-height:1.6;
     margin:10px 0;
   }
@@ -285,26 +286,26 @@
   .pdp-hero__variants-label{
     font-size:14px;
     font-weight:600;
-    color:#2B2D42;
+    color:var(--color-foreground, #2B2D42);
     margin:0 0 8px;
   }
   .pdp-hero__variant-option{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    border:2px solid #E5E7EB;
+    border:2px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
     border-radius:10px;
     padding:13px 16px;
     margin-bottom:8px;
     cursor:pointer;
     font-size:14px;
-    color:#2B2D42;
+    color:var(--color-foreground, #2B2D42);
     transition:border-color .2s;
   }
   .pdp-hero__variant-option input{display:none}
   .pdp-hero__variant-option--active,
   .pdp-hero__variant-option:has(input:checked){
-    border-color:#2B2D42;
+    border-color:var(--color-foreground, #2B2D42);
   }
   .pdp-hero__variant-option:has(input:disabled){
     opacity:.5;
@@ -316,7 +317,7 @@
 
   /* INGREDIENTS ACCORDION */
   .pdp-hero__ingredients{
-    border:2px solid #ed2d5e;
+    border:2px solid var(--color-base-accent-1, #ed2d5e);
     border-radius:35px;
     padding:14px 16px;
     margin:12px 0;
@@ -327,7 +328,7 @@
     align-items:center;
     font-weight:600;
     cursor:pointer;
-    color:#ed2d5e;
+    color:var(--color-base-accent-1, #ed2d5e);
     font-size:14px;
   }
   .pdp-hero__acc-icon{
@@ -360,15 +361,15 @@
   .pdp-hero__ingredient h4{
     margin:6px 0 2px;
     font-size:13px;
-    color:#000;
+    color:var(--color-foreground, #000);
   }
   .pdp-hero__ingredient p{
     font-size:11px;
-    color:#6B7280;
+    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
     margin:0;
   }
 
-  /* CTA — hidden on mobile (sticky bar used instead) */
+  /* CTA -- hidden on mobile (sticky bar used instead) */
   .pdp-hero__cta{display:none}
   .pdp-hero__trust{display:none}
 
@@ -391,7 +392,7 @@
       border-radius:16px;
     }
 
-    /* Thumbnails — visible on desktop */
+    /* Thumbnails -- visible on desktop */
     .pdp-hero__thumbs{
       display:flex;
       gap:8px;
@@ -408,7 +409,7 @@
       cursor:pointer;
       position:relative;
     }
-    .pdp-hero__thumb.active{border-color:#ed2d5e}
+    .pdp-hero__thumb.active{border-color:var(--color-base-accent-1, #ed2d5e)}
     .pdp-hero__thumb img{
       width:100%;height:100%;
       object-fit:cover;
@@ -437,17 +438,17 @@
       align-items:stretch;
       margin-top:20px;
       max-width:420px;
-      border:1px solid #E5E7EB;
+      border:1px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
       border-radius:10px;
       overflow:hidden;
-      background:#fff;
+      background:var(--color-background, #fff);
     }
     .pdp-hero__qty{
       display:flex;
       align-items:center;
       gap:14px;
       padding:0 14px;
-      background:#F7F7F7;
+      background:rgba(var(--color-foreground-rgb, 43, 45, 66), 0.04);
     }
     .pdp-hero__qty-btn{
       all:unset;
@@ -473,7 +474,7 @@
     .pdp-hero__qty-val::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
     .pdp-hero__buy-btn{
       flex:1;
-      background:#2B2D42;
+      background:var(--color-button, #2B2D42);
       color:#fff;
       border:none;
       font-weight:700;
@@ -492,7 +493,7 @@
     .pdp-hero__trust{
       display:block;
       font-size:12px;
-      color:#6B7280;
+      color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
       margin-top:10px;
     }
   }
@@ -545,7 +546,7 @@
       });
     });
 
-    /* Variant selection → update hidden input + price display */
+    /* Variant selection */
     const variantInputs = section.querySelectorAll('input[name="variant-' + sectionId + '"]');
     const hiddenId = document.getElementById('pdpVariantId-' + sectionId);
     const priceEl = section.querySelector('.pdp-hero__price');
@@ -590,6 +591,12 @@
       "type": "product",
       "id": "product",
       "label": "Product"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
     },
     {
       "type": "header",
