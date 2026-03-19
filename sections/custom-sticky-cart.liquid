@@ -1,8 +1,20 @@
+{%- assign product = section.settings.product -%}
+
+{% if product != blank %}
+
 <!-- STICKY BAR -->
 <div class="csc-bar color-{{ section.settings.color_scheme }}" id="cscBar-{{ section.id }}">
   <div class="csc-bar__inner">
-    <div class="csc-bar__price">
-      {{ section.settings.price }} <span>{{ section.settings.label }}</span>
+    <div class="csc-bar__left">
+      {% if section.settings.show_thumb %}
+        <img class="csc-bar__thumb" src="{{ product.featured_image | image_url: width: 80 }}" alt="{{ product.title }}">
+      {% endif %}
+      <div class="csc-bar__info">
+        <span class="csc-bar__price">{{ product.selected_or_first_available_variant.price | money }}</span>
+        {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+          <span class="csc-bar__compare">{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
+        {% endif %}
+      </div>
     </div>
     <div class="csc-bar__btn" id="cscOpenDrawer-{{ section.id }}">
       {{ section.settings.button_text | default: 'Add to Cart' }}
@@ -10,246 +22,247 @@
   </div>
 </div>
 
-<!-- DRAWER -->
+<!-- OVERLAY -->
 <div class="csc-overlay" id="cscOverlay-{{ section.id }}"></div>
+
+<!-- DRAWER -->
 <div class="csc-drawer" id="cscDrawer-{{ section.id }}">
   <div class="csc-drawer__content">
 
+    <!-- Header with product info -->
     <div class="csc-drawer__header">
-      <h3>{{ section.settings.drawer_title }}</h3>
+      <div class="csc-drawer__product">
+        <img class="csc-drawer__img" src="{{ product.featured_image | image_url: width: 120 }}" alt="{{ product.title }}">
+        <div>
+          <h3 class="csc-drawer__title">{{ product.title }}</h3>
+          <div class="csc-drawer__price-row">
+            <span class="csc-drawer__price">{{ product.selected_or_first_available_variant.price | money }}</span>
+            {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+              <span class="csc-drawer__compare">{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
+              <span class="csc-drawer__badge">
+                {{ product.selected_or_first_available_variant.compare_at_price | minus: product.selected_or_first_available_variant.price | times: 100.0 | divided_by: product.selected_or_first_available_variant.compare_at_price | round }}% OFF
+              </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
       <span class="csc-drawer__close" id="cscClose-{{ section.id }}">&#10005;</span>
     </div>
 
-    <!-- BUNDLES -->
-    {% if section.blocks.size > 0 %}
+    <!-- Variant selector (from product) -->
+    {% if product.variants.size > 1 %}
       <div class="csc-drawer__section">
-        <h4>{{ section.settings.bundles_heading | default: 'Recommended Bundles' }}</h4>
+        <h4>
+          {% if product.options.size == 1 %}{{ product.options.first }}{% else %}Select Pack{% endif %}
+        </h4>
+        {%- for variant in product.variants -%}
+          <div class="csc-variant {% if variant == product.selected_or_first_available_variant %}csc-variant--active{% endif %}"
+            data-variant-id="{{ variant.id }}"
+            data-price="{{ variant.price | money }}"
+            data-compare="{{ variant.compare_at_price | money }}"
+            data-compare-raw="{{ variant.compare_at_price }}"
+            data-price-raw="{{ variant.price }}"
+            data-available="{{ variant.available }}"
+            {% unless variant.available %}data-soldout="true"{% endunless %}>
+            <span class="csc-variant__name">
+              {{ variant.title }}
+              {% unless variant.available %}<em>(Sold out)</em>{% endunless %}
+            </span>
+            <span class="csc-variant__price">{{ variant.price | money }}</span>
+          </div>
+        {%- endfor -%}
+      </div>
+    {% endif %}
+
+    <!-- Recommended products (optional blocks) -->
+    {% assign bundle_blocks = section.blocks | where: 'type', 'bundle' %}
+    {% if bundle_blocks.size > 0 %}
+      <div class="csc-drawer__section">
+        <h4>{{ section.settings.bundles_heading | default: 'You might also like' }}</h4>
         <div class="csc-bundle-grid">
-          {% for block in section.blocks %}
-            {% if block.type == 'bundle' %}
-              <div class="csc-bundle-card" {{ block.shopify_attributes }}>
-                {% if block.settings.image != blank %}
-                  <img src="{{ block.settings.image | image_url: width: 300 }}" alt="{{ block.settings.name }}" loading="lazy">
-                {% endif %}
+          {% for block in bundle_blocks %}
+            <div class="csc-bundle-card" {{ block.shopify_attributes }}>
+              {% if block.settings.bundle_product != blank %}
+                {% assign bp = block.settings.bundle_product %}
+                <img src="{{ bp.featured_image | image_url: width: 200 }}" alt="{{ bp.title }}">
+                <p>{{ bp.title }}</p>
+                <span>{{ bp.price | money }}</span>
+              {% elsif block.settings.image != blank %}
+                <img src="{{ block.settings.image | image_url: width: 200 }}" alt="{{ block.settings.name }}">
                 <p>{{ block.settings.name }}</p>
                 <span>{{ block.settings.price }}</span>
-              </div>
-            {% endif %}
+              {% endif %}
+            </div>
           {% endfor %}
         </div>
       </div>
     {% endif %}
 
-    <!-- VARIANTS -->
-    <div class="csc-drawer__section">
-      <h4>Select Pack</h4>
-      {% for block in section.blocks %}
-        {% if block.type == 'variant' %}
-          <div class="csc-variant {% if forloop.first %}csc-variant--active{% endif %}" {{ block.shopify_attributes }}>
-            {{ block.settings.label }} - {{ block.settings.price }}
-          </div>
-        {% endif %}
-      {% endfor %}
-    </div>
-
-    <!-- QTY + CTA -->
-    <div class="csc-qty-cta">
-      <div class="csc-qty">
-        <button class="csc-qty__btn" data-action="decrease">&#8722;</button>
-        <span class="csc-qty__val">1</span>
-        <button class="csc-qty__btn" data-action="increase">+</button>
+    <!-- QTY + ADD TO CART (real Shopify form) -->
+    {%- form 'product', product, id: 'cscForm', data-section: section.id -%}
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" id="cscVariantId-{{ section.id }}">
+      <div class="csc-qty-cta">
+        <div class="csc-qty">
+          <button type="button" class="csc-qty__btn" data-action="decrease">&#8722;</button>
+          <input type="number" name="quantity" value="1" min="1" class="csc-qty__val">
+          <button type="button" class="csc-qty__btn" data-action="increase">+</button>
+        </div>
+        <button type="submit" class="csc-cta-btn"
+          {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
+          {% if product.selected_or_first_available_variant.available %}
+            {{ section.settings.cta_text | default: 'Add to Cart' }}
+          {% else %}
+            SOLD OUT
+          {% endif %}
+        </button>
       </div>
-      <button class="csc-cta-btn">{{ section.settings.cta_text | default: 'Add to Cart' }}</button>
-    </div>
+    {%- endform -%}
 
   </div>
 </div>
 
+{% endif %}
+
 <style>
   /* ===== STICKY BAR ===== */
   .csc-bar{
-    position:fixed;
-    bottom:0;left:0;
-    width:100%;
+    position:fixed;bottom:0;left:0;width:100%;
     background:var(--color-background, #fff);
-    border-top:1px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
-    padding:10px 16px;
-    z-index:999;
+    border-top:1px solid rgba(var(--color-foreground-rgb, 18, 18, 18), 0.1);
+    padding:10px 16px;z-index:999;
   }
   .csc-bar__inner{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    max-width:600px;
-    margin:0 auto;
+    display:flex;justify-content:space-between;align-items:center;
+    max-width:600px;margin:0 auto;
+  }
+  .csc-bar__left{display:flex;align-items:center;gap:10px}
+  .csc-bar__thumb{
+    width:40px;height:40px;border-radius:6px;object-fit:cover;
+    border:1px solid rgba(var(--color-foreground-rgb, 18, 18, 18), 0.08);
   }
   .csc-bar__price{
-    font-weight:700;
-    font-size:18px;
-    color:var(--color-base-accent-1, #ed2d5e);
+    font-weight:700;font-size:18px;color:var(--color-foreground, #121212);
   }
-  .csc-bar__price span{
-    font-size:12px;
-    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
-    font-weight:400;
+  .csc-bar__compare{
+    font-size:13px;text-decoration:line-through;
+    color:rgba(var(--color-foreground-rgb, 18, 18, 18), 0.4);margin-left:6px;
   }
   .csc-bar__btn{
-    background:var(--color-base-accent-1, #ed2d5e);
-    color:#fff;
-    padding:13px 22px;
-    border-radius:10px;
-    font-weight:700;
-    font-size:14px;
-    cursor:pointer;
+    background:var(--color-button, #121212);color:var(--color-button-text, #fff);
+    padding:13px 22px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;
   }
 
   /* ===== OVERLAY ===== */
   .csc-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.4);
-    z-index:999;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .3s;
+    position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;
+    opacity:0;pointer-events:none;transition:opacity .3s;
   }
-  .csc-overlay.active{
-    opacity:1;
-    pointer-events:all;
-  }
+  .csc-overlay.active{opacity:1;pointer-events:all}
 
   /* ===== DRAWER ===== */
   .csc-drawer{
-    position:fixed;
-    bottom:-100%;
-    left:0;
-    width:100%;
+    position:fixed;bottom:-100%;left:0;width:100%;
     background:var(--color-background, #fff);
     border-radius:20px 20px 0 0;
     box-shadow:0 -10px 30px rgba(0,0,0,.2);
-    transition:bottom .4s ease;
-    z-index:1000;
-    max-height:70vh;
-    overflow-y:auto;
+    transition:bottom .4s ease;z-index:1000;
+    max-height:80vh;overflow-y:auto;
   }
   .csc-drawer.active{bottom:0}
-  .csc-drawer__content{
-    padding:20px 16px;
-    max-width:600px;
-    margin:0 auto;
-  }
+  .csc-drawer__content{padding:20px 16px;max-width:600px;margin:0 auto}
+
+  /* Header */
   .csc-drawer__header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:18px;
+    display:flex;justify-content:space-between;align-items:flex-start;
+    margin-bottom:18px;gap:12px;
   }
-  .csc-drawer__header h3{
-    font-size:18px;
-    color:var(--color-foreground, #2B2D42);
-    margin:0;
+  .csc-drawer__product{display:flex;gap:12px;align-items:center;flex:1}
+  .csc-drawer__img{
+    width:60px;height:60px;border-radius:8px;object-fit:cover;
+    border:1px solid rgba(var(--color-foreground-rgb, 18, 18, 18), 0.08);
   }
-  .csc-drawer__close{
-    font-size:20px;
-    cursor:pointer;
-    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
-    padding:4px;
+  .csc-drawer__title{
+    font-size:15px;font-weight:600;color:var(--color-foreground, #121212);
+    margin:0 0 4px;line-height:1.3;
   }
-  .csc-drawer__section{
-    margin-bottom:18px;
+  .csc-drawer__price-row{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+  .csc-drawer__price{font-size:18px;font-weight:700;color:var(--color-foreground, #121212)}
+  .csc-drawer__compare{font-size:14px;text-decoration:line-through;color:rgba(var(--color-foreground-rgb, 18, 18, 18), 0.4)}
+  .csc-drawer__badge{
+    font-size:10px;font-weight:700;background:var(--color-base-accent-1, #ed2d5e);
+    color:#fff;padding:2px 6px;border-radius:3px;
   }
+  .csc-drawer__close{font-size:20px;cursor:pointer;color:rgba(var(--color-foreground-rgb, 18, 18, 18), 0.4);padding:4px}
+
+  /* Sections */
+  .csc-drawer__section{margin-bottom:18px}
   .csc-drawer__section h4{
-    font-size:14px;
-    margin:0 0 10px;
-    color:var(--color-foreground, #2B2D42);
+    font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;
+    margin:0 0 10px;color:var(--color-foreground, #121212);
   }
-  /* Bundles */
-  .csc-bundle-grid{
-    display:flex;
-    gap:10px;
-    overflow-x:auto;
-  }
-  .csc-bundle-grid::-webkit-scrollbar{display:none}
-  .csc-bundle-card{
-    min-width:120px;
-    background:var(--color-background, #fff);
-    border:1px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
-    border-radius:10px;
-    padding:10px;
-    text-align:center;
-    cursor:pointer;
-  }
-  .csc-bundle-card img{
-    width:100%;
-    height:80px;
-    object-fit:cover;
-    border-radius:8px;
-    margin-bottom:6px;
-  }
-  .csc-bundle-card p{
-    font-size:12px;
-    color:rgba(var(--color-foreground-rgb, 107, 114, 128), 0.7);
-    margin:0 0 2px;
-  }
-  .csc-bundle-card span{
-    font-size:12px;
-    font-weight:600;
-    color:var(--color-foreground, #2B2D42);
-  }
-  .csc-bundle-card:hover{border-color:var(--color-base-accent-1, #ed2d5e)}
+
   /* Variants */
   .csc-variant{
-    border:2px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
-    padding:14px 16px;
-    border-radius:10px;
-    margin-bottom:8px;
-    font-size:14px;
-    font-weight:500;
-    cursor:pointer;
-    color:var(--color-foreground, #2B2D42);
+    display:flex;justify-content:space-between;align-items:center;
+    border:1px solid rgba(var(--color-foreground-rgb, 18, 18, 18), 0.12);
+    padding:13px 16px;border-radius:10px;margin-bottom:8px;
+    font-size:14px;cursor:pointer;color:var(--color-foreground, #121212);
+    transition:border-color .2s, box-shadow .2s;
   }
-  .csc-variant--active{border-color:var(--color-foreground, #2B2D42)}
+  .csc-variant--active{
+    border-color:var(--color-foreground, #121212);
+    box-shadow:0 0 0 1px var(--color-foreground, #121212);
+  }
+  .csc-variant[data-soldout="true"]{opacity:.4;cursor:not-allowed}
+  .csc-variant__name{font-weight:500}
+  .csc-variant__name em{font-size:11px;color:rgba(var(--color-foreground-rgb, 18, 18, 18), 0.4)}
+  .csc-variant__price{font-weight:700}
+
+  /* Bundles */
+  .csc-bundle-grid{display:flex;gap:10px;overflow-x:auto}
+  .csc-bundle-grid::-webkit-scrollbar{display:none}
+  .csc-bundle-card{
+    min-width:120px;background:var(--color-background, #fff);
+    border:1px solid rgba(var(--color-foreground-rgb, 18, 18, 18), 0.1);
+    border-radius:10px;padding:10px;text-align:center;cursor:pointer;
+    transition:border-color .2s;
+  }
+  .csc-bundle-card:hover{border-color:var(--color-base-accent-1, #ed2d5e)}
+  .csc-bundle-card img{width:100%;height:80px;object-fit:cover;border-radius:8px;margin-bottom:6px}
+  .csc-bundle-card p{font-size:12px;color:rgba(var(--color-foreground-rgb, 18, 18, 18), 0.6);margin:0 0 2px}
+  .csc-bundle-card span{font-size:12px;font-weight:600;color:var(--color-foreground, #121212)}
+
   /* Qty + CTA */
   .csc-qty-cta{
-    display:flex;
-    align-items:stretch;
-    margin-top:14px;
-    border:1px solid rgba(var(--color-foreground-rgb, 43, 45, 66), 0.12);
-    border-radius:10px;
-    overflow:hidden;
-    background:var(--color-background, #fff);
+    display:flex;align-items:stretch;margin-top:14px;
+    border:1px solid rgba(var(--color-foreground-rgb, 18, 18, 18), 0.12);
+    border-radius:10px;overflow:hidden;background:var(--color-background, #fff);
   }
   .csc-qty{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding:0 14px;
-    background:rgba(var(--color-foreground-rgb, 43, 45, 66), 0.04);
+    display:flex;align-items:center;gap:14px;padding:0 14px;
+    background:rgba(var(--color-foreground-rgb, 18, 18, 18), 0.04);
   }
   .csc-qty__btn{
-    all:unset;
-    cursor:pointer;
-    font-weight:600;
-    font-size:16px;
+    all:unset;cursor:pointer;font-weight:600;font-size:16px;
+    width:28px;height:28px;display:flex;align-items:center;justify-content:center;
   }
   .csc-qty__val{
-    min-width:16px;
-    text-align:center;
-    font-weight:600;
+    width:32px;text-align:center;font-weight:600;font-size:15px;
+    border:none;background:transparent;-moz-appearance:textfield;
+    color:var(--color-foreground, #121212);
   }
+  .csc-qty__val::-webkit-inner-spin-button,
+  .csc-qty__val::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
   .csc-cta-btn{
-    flex:1;
-    background:var(--color-button, #2B2D42);
-    color:#fff;
-    border:none;
-    font-weight:700;
-    font-size:16px;
-    padding:18px 0;
-    letter-spacing:.5px;
-    cursor:pointer;
-    border-radius:0 10px 10px 0;
+    flex:1;background:var(--color-button, #121212);color:var(--color-button-text, #fff);
+    border:none;font-weight:700;font-size:16px;padding:18px 0;letter-spacing:.5px;
+    cursor:pointer;border-radius:0 10px 10px 0;transition:opacity .2s;
   }
   .csc-cta-btn:hover{opacity:.92}
+  .csc-cta-btn:disabled{
+    background:rgba(var(--color-foreground-rgb, 18, 18, 18), 0.15);
+    color:rgba(var(--color-foreground-rgb, 18, 18, 18), 0.4);cursor:not-allowed;
+  }
 
   /* ===== DESKTOP ===== */
   @media(min-width:750px){
@@ -258,55 +271,96 @@
     .csc-bar__price{font-size:20px}
     .csc-bar__btn{padding:16px 40px;font-size:16px;border-radius:12px;transition:.2s}
     .csc-bar__btn:hover{opacity:.9;transform:scale(1.02)}
-
     .csc-drawer{
-      width:500px;
-      left:50%;
-      transform:translateX(-50%);
-      border-radius:20px 20px 0 0;
-      max-height:75vh;
+      width:500px;left:50%;transform:translateX(-50%);
+      border-radius:20px 20px 0 0;max-height:75vh;
     }
     .csc-drawer.active{bottom:0;transform:translateX(-50%)}
     .csc-drawer__content{padding:30px}
+    .csc-drawer__img{width:72px;height:72px}
     .csc-bundle-card{min-width:160px;padding:14px}
     .csc-bundle-card img{height:100px}
   }
 </style>
 
 <script>
-  (function(){
-    const id = '{{ section.id }}';
-    const openBtn = document.getElementById('cscOpenDrawer-'+id);
-    const closeBtn = document.getElementById('cscClose-'+id);
-    const drawer = document.getElementById('cscDrawer-'+id);
-    const overlay = document.getElementById('cscOverlay-'+id);
+(function(){
+  const sid = '{{ section.id }}';
+  const openBtn = document.getElementById('cscOpenDrawer-'+sid);
+  const closeBtn = document.getElementById('cscClose-'+sid);
+  const drawer = document.getElementById('cscDrawer-'+sid);
+  const overlay = document.getElementById('cscOverlay-'+sid);
+  if(!drawer) return;
 
-    function open(){ drawer.classList.add('active'); overlay.classList.add('active'); }
-    function close(){ drawer.classList.remove('active'); overlay.classList.remove('active'); }
+  function open(){ drawer.classList.add('active'); overlay.classList.add('active'); }
+  function close(){ drawer.classList.remove('active'); overlay.classList.remove('active'); }
 
-    if(openBtn) openBtn.addEventListener('click', open);
-    if(closeBtn) closeBtn.addEventListener('click', close);
-    if(overlay) overlay.addEventListener('click', close);
+  if(openBtn) openBtn.addEventListener('click', open);
+  if(closeBtn) closeBtn.addEventListener('click', close);
+  if(overlay) overlay.addEventListener('click', close);
 
-    // Qty
-    drawer.querySelectorAll('.csc-qty__btn').forEach(btn => {
-      btn.addEventListener('click', function(){
-        const val = this.parentElement.querySelector('.csc-qty__val');
-        let n = parseInt(val.textContent);
-        if(this.dataset.action === 'increase') n++;
-        else if(n > 1) n--;
-        val.textContent = n;
-      });
+  /* Qty */
+  drawer.querySelectorAll('.csc-qty__btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      const inp = this.parentElement.querySelector('.csc-qty__val');
+      let n = parseInt(inp.value)||1;
+      if(this.dataset.action==='increase') n++;
+      else if(n>1) n--;
+      inp.value = n;
     });
+  });
 
-    // Variant selection
-    drawer.querySelectorAll('.csc-variant').forEach(v => {
-      v.addEventListener('click', function(){
-        drawer.querySelectorAll('.csc-variant').forEach(x => x.classList.remove('csc-variant--active'));
-        this.classList.add('csc-variant--active');
-      });
+  /* Variant selection — updates price everywhere */
+  const hiddenId = document.getElementById('cscVariantId-'+sid);
+  const barPrice = document.querySelector('#cscBar-'+sid+' .csc-bar__price');
+  const barCompare = document.querySelector('#cscBar-'+sid+' .csc-bar__compare');
+  const drawerPrice = drawer.querySelector('.csc-drawer__price');
+  const drawerCompare = drawer.querySelector('.csc-drawer__compare');
+  const drawerBadge = drawer.querySelector('.csc-drawer__badge');
+  const ctaBtn = drawer.querySelector('.csc-cta-btn');
+
+  drawer.querySelectorAll('.csc-variant').forEach(v => {
+    v.addEventListener('click', function(){
+      if(this.dataset.soldout==='true') return;
+
+      /* Active state */
+      drawer.querySelectorAll('.csc-variant').forEach(x => x.classList.remove('csc-variant--active'));
+      this.classList.add('csc-variant--active');
+
+      /* Update hidden variant ID */
+      if(hiddenId) hiddenId.value = this.dataset.variantId;
+
+      /* Update prices */
+      const price = this.dataset.price;
+      const compare = this.dataset.compare;
+      const priceRaw = parseInt(this.dataset.priceRaw);
+      const compareRaw = parseInt(this.dataset.compareRaw);
+
+      if(barPrice) barPrice.textContent = price;
+      if(drawerPrice) drawerPrice.textContent = price;
+
+      if(compareRaw > priceRaw){
+        if(barCompare){ barCompare.textContent = compare; barCompare.style.display = ''; }
+        if(drawerCompare){ drawerCompare.textContent = compare; drawerCompare.style.display = ''; }
+        if(drawerBadge){
+          drawerBadge.textContent = Math.round((compareRaw - priceRaw) / compareRaw * 100) + '% OFF';
+          drawerBadge.style.display = '';
+        }
+      } else {
+        if(barCompare) barCompare.style.display = 'none';
+        if(drawerCompare) drawerCompare.style.display = 'none';
+        if(drawerBadge) drawerBadge.style.display = 'none';
+      }
+
+      /* Update CTA state */
+      const avail = this.dataset.available === 'true';
+      if(ctaBtn){
+        ctaBtn.disabled = !avail;
+        ctaBtn.textContent = avail ? '{{ section.settings.cta_text | default: "Add to Cart" }}' : 'SOLD OUT';
+      }
     });
-  })();
+  });
+})();
 </script>
 
 {% schema %}
@@ -315,86 +369,76 @@
   "class": "section-sticky-cart",
   "settings": [
     {
-      "type": "text",
-      "id": "price",
-      "label": "Display Price",
-      "default": "₹749"
-    },
-    {
-      "type": "text",
-      "id": "label",
-      "label": "Price Label",
-      "default": "Starter Pack"
-    },
-    {
-      "type": "text",
-      "id": "button_text",
-      "label": "Sticky Bar Button Text",
-      "default": "Add to Cart"
-    },
-    {
-      "type": "text",
-      "id": "drawer_title",
-      "label": "Drawer Title",
-      "default": "Muskmelon Mango Baby Puree"
-    },
-    {
-      "type": "text",
-      "id": "bundles_heading",
-      "label": "Bundles Section Heading",
-      "default": "Recommended Bundles"
-    },
-    {
-      "type": "text",
-      "id": "cta_text",
-      "label": "Drawer CTA Text",
-      "default": "Add to Cart"
+      "type": "product",
+      "id": "product",
+      "label": "Product",
+      "info": "All pricing, variants, images are fetched from this product"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "t:sections.all.colors.label",
       "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Sticky Bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_thumb",
+      "label": "Show Product Thumbnail",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "header",
+      "content": "Drawer"
+    },
+    {
+      "type": "text",
+      "id": "bundles_heading",
+      "label": "Recommended Section Heading",
+      "default": "You might also like"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Button Text",
+      "default": "Add to Cart"
     }
   ],
   "blocks": [
     {
       "type": "bundle",
-      "name": "Bundle Card",
+      "name": "Recommended Product",
       "settings": [
+        {
+          "type": "product",
+          "id": "bundle_product",
+          "label": "Product",
+          "info": "Pick a product — image, title, price auto-fetched. Or use manual fields below."
+        },
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image"
+          "label": "Manual Image (fallback)"
         },
         {
           "type": "text",
           "id": "name",
-          "label": "Name",
+          "label": "Manual Name (fallback)",
           "default": "Starter Pack"
         },
         {
           "type": "text",
           "id": "price",
-          "label": "Price",
-          "default": "₹749"
-        }
-      ]
-    },
-    {
-      "type": "variant",
-      "name": "Variant Option",
-      "settings": [
-        {
-          "type": "text",
-          "id": "label",
-          "label": "Label",
-          "default": "Starter Pack"
-        },
-        {
-          "type": "text",
-          "id": "price",
-          "label": "Price",
+          "label": "Manual Price (fallback)",
           "default": "₹749"
         }
       ]
@@ -402,13 +446,7 @@
   ],
   "presets": [
     {
-      "name": "Sticky Cart + Drawer",
-      "blocks": [
-        { "type": "bundle", "settings": { "name": "Starter Pack", "price": "₹749" } },
-        { "type": "bundle", "settings": { "name": "Value Combo", "price": "₹1349" } },
-        { "type": "variant", "settings": { "label": "Starter Pack", "price": "₹749" } },
-        { "type": "variant", "settings": { "label": "Value Combo", "price": "₹1349" } }
-      ]
+      "name": "Sticky Cart + Drawer"
     }
   ]
 }
